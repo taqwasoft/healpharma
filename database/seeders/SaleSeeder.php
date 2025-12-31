@@ -1,0 +1,45 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Sale;
+use App\Models\SaleDetails;
+use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+class SaleSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $sales = array(
+            array('business_id' => '1', 'party_id' => NULL, 'user_id' => '4', 'tax_id' => '1', 'discountAmount' => '5.00', 'shipping_charge' => '40', 'discount_percent' => '0', 'discount_type' => 'flat', 'dueAmount' => '0.00', 'isPaid' => '1', 'tax_amount' => '17.25', 'paidAmount' => '397.25', 'change_amount' => '102.75', 'totalAmount' => '397.25', 'actual_total_amount' => '397.25', 'rounding_amount' => '0.00', 'rounding_option' => 'none', 'lossProfit' => '-35.00', 'paymentType' => NULL, 'payment_type_id' => '1', 'invoiceNumber' => '1', 'saleDate' => '2025-08-13 08:35:27', 'image' => NULL, 'sale_data' => NULL, 'status' => 'draft', 'meta' => '{"customer_phone":null,"notes":null}', 'created_at' => '2025-08-13 08:35:27', 'updated_at' => '2025-08-13 08:35:27'),
+            array('business_id' => '1', 'party_id' => NULL, 'user_id' => '4', 'tax_id' => '3', 'discountAmount' => '20.00', 'shipping_charge' => '0', 'discount_percent' => '5', 'discount_type' => 'percent', 'dueAmount' => '0.00', 'isPaid' => '1', 'tax_amount' => '80.00', 'paidAmount' => '175.00', 'change_amount' => '0', 'totalAmount' => '460.00', 'actual_total_amount' => '840.00', 'rounding_amount' => '0.00', 'rounding_option' => 'none', 'lossProfit' => '156.00', 'paymentType' => NULL, 'payment_type_id' => '3', 'invoiceNumber' => '2', 'saleDate' => '2025-08-13 08:39:04', 'image' => NULL, 'sale_data' => '{"business_id":null,"user_id":null,"tax_id":null,"discount_percent":0,"tax_amount":0,"payment_type_id":null}', 'status' => 'draft', 'meta' => '{"customer_phone":null,"notes":null}', 'created_at' => '2025-08-13 08:39:04', 'updated_at' => '2025-08-13 08:39:26'),
+            array('business_id' => '1', 'party_id' => NULL, 'user_id' => '4', 'tax_id' => '4', 'discountAmount' => '10.00', 'shipping_charge' => '50', 'discount_percent' => '0', 'discount_type' => 'flat', 'dueAmount' => '1081.60', 'isPaid' => '0', 'tax_amount' => '201.60', 'paidAmount' => '0.00', 'change_amount' => '0', 'totalAmount' => '1081.60', 'actual_total_amount' => '1911.60', 'rounding_amount' => '0.00', 'rounding_option' => 'none', 'lossProfit' => '186.00', 'paymentType' => NULL, 'payment_type_id' => '1', 'invoiceNumber' => '3', 'saleDate' => '2025-08-13 08:40:34', 'image' => NULL, 'sale_data' => '{"business_id":null,"user_id":null,"tax_id":null,"discount_percent":0,"tax_amount":0,"payment_type_id":null}', 'status' => 'draft', 'meta' => '{"customer_phone":null,"notes":null}', 'created_at' => '2025-08-13 08:40:34', 'updated_at' => '2025-08-13 08:41:02'),
+            array('business_id' => '1', 'party_id' => '9', 'user_id' => '4', 'tax_id' => '2', 'discountAmount' => '0.00', 'shipping_charge' => '0', 'discount_percent' => '0', 'discount_type' => 'flat', 'dueAmount' => '934.50', 'isPaid' => '0', 'tax_amount' => '94.50', 'paidAmount' => '0.00', 'change_amount' => '0', 'totalAmount' => '934.50', 'actual_total_amount' => '1354.50', 'rounding_amount' => '0.00', 'rounding_option' => 'none', 'lossProfit' => '-105.00', 'paymentType' => NULL, 'payment_type_id' => '2', 'invoiceNumber' => '4', 'saleDate' => '2025-08-13 08:42:39', 'image' => NULL, 'sale_data' => '{"business_id":null,"user_id":null,"tax_id":null,"discount_percent":0,"tax_amount":0,"payment_type_id":null}', 'status' => 'draft', 'meta' => '{"customer_phone":null,"notes":null}', 'created_at' => '2025-08-13 08:42:39', 'updated_at' => '2025-08-13 08:43:40'),
+            array('business_id' => '1', 'party_id' => NULL, 'user_id' => '4', 'tax_id' => '3', 'discountAmount' => '40.00', 'shipping_charge' => '50', 'discount_percent' => '0', 'discount_type' => 'flat', 'dueAmount' => '1242.50', 'isPaid' => '0', 'tax_amount' => '157.50', 'paidAmount' => '500.00', 'change_amount' => '0', 'totalAmount' => '1742.50', 'actual_total_amount' => '1742.50', 'rounding_amount' => '0.00', 'rounding_option' => 'none', 'lossProfit' => '95.00', 'paymentType' => NULL, 'payment_type_id' => '4', 'invoiceNumber' => '5', 'saleDate' => '2025-08-13 08:47:47', 'image' => NULL, 'sale_data' => NULL, 'status' => 'draft', 'meta' => '{"customer_phone":null,"notes":null}', 'created_at' => '2025-08-13 08:47:47', 'updated_at' => '2025-08-13 08:47:47'),
+            array('business_id' => '1', 'party_id' => '5', 'user_id' => '4', 'tax_id' => '1', 'discountAmount' => '147.50', 'shipping_charge' => '60', 'discount_percent' => '5', 'discount_type' => 'percent', 'dueAmount' => '422.00', 'isPaid' => '0', 'tax_amount' => '147.50', 'paidAmount' => '2588.00', 'change_amount' => '0', 'totalAmount' => '3010.00', 'actual_total_amount' => '3010.00', 'rounding_amount' => '0.00', 'rounding_option' => 'none', 'lossProfit' => '706.50', 'paymentType' => NULL, 'payment_type_id' => '1', 'invoiceNumber' => '6', 'saleDate' => '2025-08-13 08:49:15', 'image' => NULL, 'sale_data' => NULL, 'status' => 'draft', 'meta' => '{"customer_phone":null,"notes":null}', 'created_at' => '2025-08-13 08:49:15', 'updated_at' => '2025-08-13 08:49:15'),
+            array('business_id' => '1', 'party_id' => '8', 'user_id' => '4', 'tax_id' => '3', 'discountAmount' => '50.00', 'shipping_charge' => '50', 'discount_percent' => '0', 'discount_type' => 'flat', 'dueAmount' => '0.00', 'isPaid' => '1', 'tax_amount' => '139.80', 'paidAmount' => '1537.80', 'change_amount' => '962.2', 'totalAmount' => '1537.80', 'actual_total_amount' => '1537.80', 'rounding_amount' => '0.00', 'rounding_option' => 'none', 'lossProfit' => '367.30', 'paymentType' => NULL, 'payment_type_id' => '1', 'invoiceNumber' => '7', 'saleDate' => '2025-08-13 08:52:16', 'image' => NULL, 'sale_data' => NULL, 'status' => 'draft', 'meta' => '{"customer_phone":null,"notes":null}', 'created_at' => '2025-08-13 08:52:16', 'updated_at' => '2025-08-13 08:52:16'),
+            array('business_id' => '1', 'party_id' => NULL, 'user_id' => '4', 'tax_id' => '3', 'discountAmount' => '57.00', 'shipping_charge' => '57', 'discount_percent' => '6', 'discount_type' => 'percent', 'dueAmount' => '1045.00', 'isPaid' => '0', 'tax_amount' => '95.00', 'paidAmount' => '0.00', 'change_amount' => '0', 'totalAmount' => '1045.00', 'actual_total_amount' => '1045.00', 'rounding_amount' => '0.00', 'rounding_option' => 'none', 'lossProfit' => '355.50', 'paymentType' => NULL, 'payment_type_id' => '5', 'invoiceNumber' => '8', 'saleDate' => '2025-08-13 08:53:11', 'image' => NULL, 'sale_data' => NULL, 'status' => 'draft', 'meta' => '{"customer_phone":null,"notes":null}', 'created_at' => '2025-08-13 08:53:11', 'updated_at' => '2025-08-13 08:53:11')
+        );
+
+        Sale::insert($sales);
+
+        $sale_details = array(
+            array('sale_id' => '1', 'product_id' => '12', 'price' => '345.00', 'purchase_price' => '375.00', 'lossProfit' => '-35.00', 'batch_no' => 'OZ452', 'expire_date' => '2028-03-12', 'quantities' => '1.00'),
+            array('sale_id' => '2', 'product_id' => '4', 'price' => '400.00', 'purchase_price' => '224.00', 'lossProfit' => '156.00', 'batch_no' => 'C110', 'expire_date' => '2025-12-10', 'quantities' => '1.00'),
+            array('sale_id' => '3', 'product_id' => '3', 'price' => '420.00', 'purchase_price' => '322.00', 'lossProfit' => '186.00', 'batch_no' => 'M321', 'expire_date' => '2026-01-15', 'quantities' => '2.00'),
+            array('sale_id' => '4', 'product_id' => '15', 'price' => '420.00', 'purchase_price' => '472.50', 'lossProfit' => '-105.00', 'batch_no' => 'OZ455', 'expire_date' => '2028-03-12', 'quantities' => '2.00'),
+            array('sale_id' => '5', 'product_id' => '12', 'price' => '345.00', 'purchase_price' => '375.00', 'lossProfit' => '-110.00', 'batch_no' => 'OZ452', 'expire_date' => '2028-03-12', 'quantities' => '3.00'),
+            array('sale_id' => '5', 'product_id' => '5', 'price' => '270.00', 'purchase_price' => '157.50', 'lossProfit' => '205.00', 'batch_no' => 'NSP55', 'expire_date' => '2026-03-01', 'quantities' => '2.00'),
+            array('sale_id' => '6', 'product_id' => '4', 'price' => '370.00', 'purchase_price' => '224.00', 'lossProfit' => '510.25', 'batch_no' => 'C110', 'expire_date' => '2025-12-10', 'quantities' => '4.00'),
+            array('sale_id' => '6', 'product_id' => '2', 'price' => '490.00', 'purchase_price' => '400.00', 'lossProfit' => '196.25', 'batch_no' => 'B012', 'expire_date' => '2025-08-30', 'quantities' => '3.00'),
+            array('sale_id' => '7', 'product_id' => '14', 'price' => '699.00', 'purchase_price' => '490.35', 'lossProfit' => '367.30', 'batch_no' => 'OZ454', 'expire_date' => '2028-03-12', 'quantities' => '2.00'),
+            array('sale_id' => '8', 'product_id' => '1', 'price' => '950.00', 'purchase_price' => '537.50', 'lossProfit' => '355.50', 'batch_no' => 'A001', 'expire_date' => '2025-05-24', 'quantities' => '1.00')
+        );
+
+        SaleDetails::insert($sale_details);
+    }
+}

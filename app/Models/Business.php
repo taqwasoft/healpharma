@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Business extends Model
+{
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'plan_subscribe_id',
+        'business_category_id',
+        'companyName',
+        'address',
+        'phoneNumber',
+        'pictureUrl',
+        'will_expire',
+        'subscriptionDate',
+        'remainingShopBalance',
+        'shopOpeningBalance',
+        'tax_no',
+        'tax_name',
+    ];
+
+    public function enrolled_plan()
+    {
+        return $this->belongsTo(PlanSubscribe::class, 'plan_subscribe_id');
+    }
+
+
+    public function category()
+    {
+        return $this->belongsTo(BusinessCategory::class, 'business_category_id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'business_id');
+    }
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'plan_subscribe_id' => 'integer',
+        'business_category_id' => 'integer',
+        'remainingShopBalance' => 'double',
+        'shopOpeningBalance' => 'double',
+    ];
+}

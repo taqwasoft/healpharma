@@ -1,0 +1,32 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Stock;
+use Illuminate\Database\Seeder;
+
+class StockSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $stocks = array(
+            array('business_id' => '1', 'product_id' => '1', 'productStock' => '130.00', 'batch_no' => 'A001', 'purchase_without_tax' => '500', 'purchase_with_tax' => '537.5', 'sales_price' => '950', 'wholesale_price' => '700', 'dealer_price' => '750', 'profit_percent' => '90', 'mfg_date' => '2025-01', 'expire_date' => '2025-05-24', 'created_at' => '2025-05-20 16:32:46', 'updated_at' => '2025-05-20 16:32:46'),
+            array('business_id' => '1', 'product_id' => '2', 'productStock' => '500.00', 'batch_no' => 'B012', 'purchase_without_tax' => '320', 'purchase_with_tax' => '400', 'sales_price' => '512', 'wholesale_price' => '470', 'dealer_price' => '490', 'profit_percent' => '60', 'mfg_date' => '2025-07', 'expire_date' => '2025-08-30', 'created_at' => '2025-05-20 16:35:00', 'updated_at' => '2025-05-20 16:35:00'),
+            array('business_id' => '1', 'product_id' => '3', 'productStock' => '220.00', 'batch_no' => 'M321', 'purchase_without_tax' => '280', 'purchase_with_tax' => '322', 'sales_price' => '420', 'wholesale_price' => '380', 'dealer_price' => '390', 'profit_percent' => '50', 'mfg_date' => '2024-06', 'expire_date' => '2026-01-15', 'created_at' => '2025-05-20 16:36:20', 'updated_at' => '2025-05-20 16:36:20'),
+            array('business_id' => '1', 'product_id' => '4', 'productStock' => '100.00', 'batch_no' => 'C110', 'purchase_without_tax' => '200', 'purchase_with_tax' => '224', 'sales_price' => '400', 'wholesale_price' => '350', 'dealer_price' => '370', 'profit_percent' => '100', 'mfg_date' => '2023-03', 'expire_date' => '2025-12-10', 'created_at' => '2025-05-20 16:37:15', 'updated_at' => '2025-05-20 16:37:15'),
+            array('business_id' => '1', 'product_id' => '5', 'productStock' => '380.00', 'batch_no' => 'NSP55', 'purchase_without_tax' => '150', 'purchase_with_tax' => '157.5', 'sales_price' => '270', 'wholesale_price' => '230', 'dealer_price' => '250', 'profit_percent' => '80', 'mfg_date' => '2022-11', 'expire_date' => '2026-03-01', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '6', 'productStock' => '432.00', 'batch_no' => 'PL454', 'purchase_without_tax' => '570', 'purchase_with_tax' => '712.5', 'sales_price' => '1638.75', 'wholesale_price' => '550', 'dealer_price' => '560', 'profit_percent' => '130', 'mfg_date' => '2024-07', 'expire_date' => '2027-01-07', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '7', 'productStock' => '350.00', 'batch_no' => 'AX453', 'purchase_without_tax' => '455', 'purchase_with_tax' => '509.6', 'sales_price' => '942.76', 'wholesale_price' => '450', 'dealer_price' => '455', 'profit_percent' => '85', 'mfg_date' => '2021-06', 'expire_date' => '2028-08-01', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '8', 'productStock' => '429.00', 'batch_no' => 'LC873', 'purchase_without_tax' => '378', 'purchase_with_tax' => '434.7', 'sales_price' => '831.6', 'wholesale_price' => '750', 'dealer_price' => '765', 'profit_percent' => '120', 'mfg_date' => '2025-09', 'expire_date' => '2029-03-09', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '9', 'productStock' => '280.00', 'batch_no' => 'COL877', 'purchase_without_tax' => '453', 'purchase_with_tax' => '534.54', 'sales_price' => '847.11', 'wholesale_price' => '600', 'dealer_price' => '630', 'profit_percent' => '87', 'mfg_date' => '2022-01', 'expire_date' => '2026-08-01', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '10', 'productStock' => '500.00', 'batch_no' => 'OZ456', 'purchase_without_tax' => '458', 'purchase_with_tax' => '480.9', 'sales_price' => '1007.6', 'wholesale_price' => '769', 'dealer_price' => '780', 'profit_percent' => '120', 'mfg_date' => '2024-12', 'expire_date' => '2028-03-12', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '11', 'productStock' => '600.00', 'batch_no' => 'OZ451', 'purchase_without_tax' => '500', 'purchase_with_tax' => '590', 'sales_price' => '625.4', 'wholesale_price' => '450', 'dealer_price' => '440', 'profit_percent' => '6', 'mfg_date' => '2023-05', 'expire_date' => '2028-03-12', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '12', 'productStock' => '700.00', 'batch_no' => 'OZ452', 'purchase_without_tax' => '300', 'purchase_with_tax' => '375', 'sales_price' => '345', 'wholesale_price' => '320', 'dealer_price' => '330', 'profit_percent' => '15', 'mfg_date' => '2024-02', 'expire_date' => '2028-03-12', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '13', 'productStock' => '800.00', 'batch_no' => 'OZ453', 'purchase_without_tax' => '569', 'purchase_with_tax' => '611.675', 'sales_price' => '648.66', 'wholesale_price' => '659', 'dealer_price' => '623', 'profit_percent' => '14', 'mfg_date' => '2020-09', 'expire_date' => '2028-03-12', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '14', 'productStock' => '900.00', 'batch_no' => 'OZ454', 'purchase_without_tax' => '467', 'purchase_with_tax' => '490.35', 'sales_price' => '529.58', 'wholesale_price' => '699', 'dealer_price' => '645', 'profit_percent' => '8', 'mfg_date' => '2023-04', 'expire_date' => '2028-03-12', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00'),
+            array('business_id' => '1', 'product_id' => '15', 'productStock' => '1000.00', 'batch_no' => 'OZ455', 'purchase_without_tax' => '378', 'purchase_with_tax' => '472.5', 'sales_price' => '427.14', 'wholesale_price' => '430', 'dealer_price' => '420', 'profit_percent' => '13', 'mfg_date' => '2021-10', 'expire_date' => '2028-03-12', 'created_at' => '2025-05-20 16:38:00', 'updated_at' => '2025-05-20 16:38:00')
+        );
+
+        Stock::insert($stocks);
+    }
+}
