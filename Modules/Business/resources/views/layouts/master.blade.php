@@ -18,7 +18,7 @@
 <body class="{{ $isSalePage ? 'sale-page-bg' : '' }}">
 
 <!-- Side Bar Start -->
-@include('business::layouts.partials.siqde-bar')
+@include('business::layouts.partials.side-bar')
 <!-- Side Bar End -->
 <div class="section-container">
     <!-- header start -->
