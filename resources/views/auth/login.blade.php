@@ -47,14 +47,14 @@
                                 <button type="submit" class="btn login-btn submit-btn">{{ __('Log In') }}</button>
 
 
-                                <div class="row d-flex flex-wrap mt-2 justify-content-between">
+                                {{-- <div class="row d-flex flex-wrap mt-2 justify-content-between">
                                     <div class="col">
                                         <a href="{{ route('home') }}">{{ __('Back to Home') }}</a>
                                     </div>
                                     <div class="col text-end">
                                         <a class="text-primary" href="javascript:void(0)" data-bs-target="#registration-modal" data-bs-toggle="modal">{{ __('Create an account.') }}</a>
                                     </div>
-                                </div>
+                                </div> --}}
                                 @if (env('DEMO_MODE'))
                                 @include('auth.demo-buttons')
                                 @endif

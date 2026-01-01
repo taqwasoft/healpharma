@@ -4,9 +4,9 @@
 
 @section('main_content')
 <div class="footer">
-    <div class="footer-logo w-100  d-flex align-items-center justify-content-center">
+    {{-- <div class="footer-logo w-100  d-flex align-items-center justify-content-center">
         <img src="{{ asset(get_option('login-page')['login_page_icon'] ?? 'assets/images/login/login-logo.svg') ?? '' }}" alt="Logo">
-    </div>
+    </div> --}}
     <div class="mybazar-login-section">
 
         <div class="mybazar-login-wrapper">
