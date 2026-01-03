@@ -70,7 +70,30 @@
                                         </tr>
                                         <tr>
                                             <td>4</td>
-                                            <td class="text-start">{{__('Brand Name')}}</td>
+                                            <td class="text-start">{{__('Medicine Type')}}</td>
+                                            <td class="text-start">
+                                                {{__('The type of medicine (e.g., Tablet, Syrup, Injection).')}}
+                                                <br>
+                                                <small>{{__('If the system does not find this, it will automatically create a new one.')}}</small>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td class="text-start">{{__('Strength')}}</td>
+                                            <td class="text-start">
+                                                {{__('The strength or dosage of the medicine (e.g., 500mg, 10ml, 250mg).')}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>6</td>
+                                            <td class="text-start">{{__('Generic Name')}}</td>
+                                            <td class="text-start">
+                                                {{__('The generic or chemical name of the medicine (e.g., Paracetamol, Amoxicillin).')}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>7</td>
+                                            <td class="text-start">{{__('Manufacturer Name')}}</td>
                                             <td class="text-start">
                                                 {{__('The brand or manufacturer associated with the product (e.g., Samsung, Nestlé).')}}
                                                 <br>
@@ -78,12 +101,21 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>5</td>
+                                            <td>8</td>
+                                            <td class="text-start">{{__('Box Size')}}</td>
+                                            <td class="text-start">
+                                                {{__('The size or quantity of items per box (e.g., 10 pieces, 20 strips).')}}
+                                                <br>
+                                                <small>{{__('If the system does not find this, it will automatically create a new one.')}}</small>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>9</td>
                                             <td class="text-start">{{__('Stock Quantity')}}</td>
                                             <td class="text-start"> {{__('The available quantity of the product currently in inventory.')}}</td>
                                         </tr>
                                         <tr>
-                                            <td>6</td>
+                                            <td>10</td>
                                             <td class="text-start">{{__('Product Code')}} <span class="text-danger fw-bold">*</span></td>
                                             <td class="text-start">
                                                 {{__('A unique code for the product, often used for barcodes or easy search.')}}
@@ -92,27 +124,29 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>7</td>
+                                            <td>11</td>
                                             <td class="text-start">{{__('Purchase Price')}} <span class="text-danger fw-bold">*</span></td>
                                             <td class="text-start">{{__('The cost price of the product without including VAT.')}}</td>
                                         </tr>
                                         <tr>
-                                            <td>8</td>
+                                            <td>12</td>
                                             <td class="text-start">{{__('Sale Price')}}(MRP) <span class="text-danger fw-bold">*</span></td>
                                             <td class="text-start">{{__('Maximum Retail Price — the highest price allowed to sell the product to customers.')}}</td>
                                         </tr>
                                         <tr>
-                                            <td>9</td>
+                                            <td>13</td>
                                             <td class="text-start">{{__('Dealer Price')}}</td>
                                             <td class="text-start">{{__('Special discounted price for resellers or dealers who buy in large quantities.')}}</td>
                                         </tr>
                                         <tr>
-                                            <td>10</td>
+                                            <td>14</td>
                                             <td class="text-start">{{__('Wholesale Price')}}</td>
                                             <td class="text-start">{{__('The price offered for bulk purchases, typically lower than the MRP.')}}</td>
                                         </tr>
                                         <tr>
-                                            <td>11</td>
+                                            <td>15</td>
+                                            <td class="text-start">{{__('VAT Name')}}</td>
+                                            <td>14</td>
                                             <td class="text-start">{{__('VAT Name')}}</td>
                                             <td class="text-start">
                                                 {{__('The name of the VAT (Value Added Tax) applied to the product.')}}
@@ -121,29 +155,34 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>12</td>
+                                            <td>16</td>
                                             <td class="text-start">{{__('VAT')}} (%)</td>
                                             <td class="text-start">{{__('The percentage of VAT (Value Added Tax) applied to the product.')}}</td>
                                         </tr>
                                         <tr>
-                                            <td>13</td>
+                                            <td>17</td>
                                             <td class="text-start">{{__('Vat Type (exclusive / inclusive)')}}</td>
                                             <td class="text-start">{{__('Whether the VAT is added on top of the price (exclusive) or already included in the price (inclusive).')}}</td>
                                         </tr>
                                         <tr>
-                                            <td>14</td>
+                                            <td>18</td>
                                             <td class="text-start">{{__('Low Stock Qty')}}</td>
                                             <td class="text-start">{{__('The quantity threshold to alert when stock is low (e.g., if stock drops below 10 units).')}}</td>
                                         </tr>
                                         <tr>
-                                            <td>15</td>
-                                            <td class="text-start">{{__('Manufacturer')}}</td>
-                                            <td class="text-start">{{__('The name of the company or entity that produces the product.')}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>16</td>
+                                            <td>19</td>
                                             <td class="text-start">{{__('Expire Date')}}</td>
                                             <td class="text-start">{{__('The expiry date for the product, useful especially for perishable goods.')}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>20</td>
+                                            <td class="text-start">{{__('Manufacturing Date')}}</td>
+                                            <td class="text-start">{{__('The date when the product was manufactured.')}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>21</td>
+                                            <td class="text-start">{{__('Batch Number')}}</td>
+                                            <td class="text-start">{{__('The batch number for tracking product batches.')}}</td>
                                         </tr>
                                     </tbody>
                                 </table>

@@ -23,7 +23,7 @@
         <td class="table-single-content">
             <img src="{{ asset($product->images[0] ?? 'assets/images/logo/default-img.jpg') }}" alt="Img" class="table-product-img table-img">
         </td>
-        <td class="table-single-content d-print-none">
+        <td class="table-single-content d-print-none" style="min-width: 400px; width: 400px; word-wrap: break-word; white-space: normal; text-align: left;">
             @php
                 $stocks = $product->stocks->map(function ($batch) use ($product) {
                     return [
@@ -39,7 +39,7 @@
                     ];
                 });
             @endphp
-            <a href="javascript:void(0);" class="stock-view-data text-primary" data-stocks='@json($stocks)'>
+            <a href="javascript:void(0);" class="stock-view-data text-primary" data-stocks='@json($stocks)' style="word-break: break-word; display: block; text-align: left;">
                 {{ $product->productName }}
             </a>
         </td>

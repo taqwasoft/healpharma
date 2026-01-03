@@ -415,7 +415,7 @@
                 </li>
             @endif
 
-            @if (auth()->user()->role != 'staff')
+            {{-- @if (auth()->user()->role != 'staff')
             <li>
                 <a href="{{ get_option('general')['app_link'] ?? '' }}" target="_blank" class="active">
                     <span class="sidebar-icon">
@@ -462,7 +462,7 @@
                     </div>
                 </div>
             </li>
-            @endif
+            @endif --}}
         </ul>
     </div>
 </nav>

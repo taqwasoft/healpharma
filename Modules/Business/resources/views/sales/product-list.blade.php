@@ -5,7 +5,7 @@
         $purchaseWithTax = $firstStock->purchase_with_tax ?? 0;
         $salePrice = $firstStock->sales_price ?? 0;
     @endphp
-    <div id="single-product" class="single-product {{ $product->id }}"
+    <div id="single-product" class="single-product {{ $product->id }} d-flex align-items-center justify-content-between gap-3 p-2"
          data-product_id="{{ $product->id }}"
          data-default_price="{{ $salePrice }}"
          data-product_unit_name="{{ $product->unit->unitName ?? '' }}"
@@ -18,17 +18,12 @@
          data-stocks='@json($product->stocks)'
          data-route="{{ route('business.carts.store') }}">
 
-        <div class="pro-img w-100">
-            <img src="{{ asset($product->images[0] ?? 'assets/images/products/box.svg') }}" alt="">
+        <div class="product-con" style="flex: 1; min-width: 0;">
+            <h6 class="pro-title product_name mb-0" style="font-size: 0.9rem; white-space: normal; overflow: visible;">{{ $product->productName }}</h6>
         </div>
-        <div class="product-con">
-            <h6 class="pro-title product_name">{{ Str::words($product->productName, 2, '.') }}</h6>
-
-            <p class="pro-category">{{ $product->category->name ?? '' }}</p>
-            <div class="price">
-                <h6 class="pro-price product_price">
-                    {{ currency_format($salePrice, 'icon', 2, business_currency()) }}</h6>
-            </div>
+        <div class="price" style="flex-shrink: 0;">
+            <h6 class="pro-price product_price mb-0" style="font-size: 0.85rem;">
+                {{ currency_format($salePrice, 'icon', 2, business_currency()) }}</h6>
         </div>
     </div>
 @empty

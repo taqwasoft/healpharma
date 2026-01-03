@@ -147,10 +147,20 @@ class AcnooProductController extends Controller
         $basePrice = $lastStock['exclusive_price'] ?? 0;
         $tax_amount = 0;
 
-        $product = Product::create($request->except(['images', 'profit_percent', 'purchase_without_tax', 'purchase_with_tax', 'sales_price', 'dealer_price', 'wholesale_price', 'alert_qty','tax_amount']) + [
+        // Prepare meta array - merge existing meta with generic_name
+        $meta = $request->meta ?? [];
+        if ($request->generic_name) {
+            $meta['generic_name'] = $request->generic_name;
+        }
+        if ($request->has('meta.strength')) {
+            $meta['strength'] = $request->input('meta.strength');
+        }
+
+        $product = Product::create($request->except(['images', 'profit_percent', 'purchase_without_tax', 'purchase_with_tax', 'sales_price', 'dealer_price', 'wholesale_price', 'alert_qty','tax_amount', 'meta']) + [
             'business_id' => $business_id,
             'alert_qty' => $request->alert_qty ?? 0,
             'images' => $request->images ? $this->multipleUpload($request, 'images') : NULL,
+            'meta' => !empty($meta) ? $meta : NULL,
         ]);
 
         // Create all stocks
@@ -354,12 +364,22 @@ class AcnooProductController extends Controller
             }
             Stock::insert($stockData);
 
+            // Prepare meta array - merge existing meta with generic_name
+            $meta = $request->meta ?? $product->meta ?? [];
+            if ($request->generic_name) {
+                $meta['generic_name'] = $request->generic_name;
+            }
+            if ($request->has('meta.strength')) {
+                $meta['strength'] = $request->input('meta.strength');
+            }
+
             // Update product
-            $product->update($request->except(['images', 'profit_percent', 'purchase_without_tax', 'purchase_with_tax', 'sales_price', 'dealer_price', 'wholesale_price', 'alert_qty','tax_amount']) + [
+            $product->update($request->except(['images', 'profit_percent', 'purchase_without_tax', 'purchase_with_tax', 'sales_price', 'dealer_price', 'wholesale_price', 'alert_qty','tax_amount', 'meta']) + [
                     'business_id' => $business_id,
                     'alert_qty' => $request->alert_qty ?? 0,
                     'tax_amount' => $tax_amount,
                     'images' => $updatedImages,
+                    'meta' => !empty($meta) ? $meta : NULL,
                 ]);
 
             DB::commit();

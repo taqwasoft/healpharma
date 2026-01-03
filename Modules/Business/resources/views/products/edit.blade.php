@@ -159,7 +159,7 @@
                                             @if (is_module_enabled($modules, 'show_product_generic_name'))
                                             <div class="col-lg-4 mb-2">
                                                 <label>{{ __('Generic Name') }}</label>
-                                                <input type="text" name="meta[generic_name]" value="{{ $product->meta['generic_name'] ?? '' }}" class="form-control" placeholder="{{ __('Enter Generic Name') }}">
+                                                <input type="text" name="generic_name" value="{{ $product->generic_name ?? $product->meta['generic_name'] ?? '' }}" class="form-control" placeholder="{{ __('Enter Generic Name') }}">
                                             </div>
                                             @endif
 

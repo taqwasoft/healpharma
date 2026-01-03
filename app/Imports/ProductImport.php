@@ -49,21 +49,23 @@ class ProductImport implements ToCollection
                 $categoryName = trim($row[1]);
                 $unitName = trim($row[2]);
                 $medicineType = trim($row[3]);
-                $manufacturerName = trim($row[4]);
-                $boxSize = trim($row[5]);
-                $stockQty = $row[6] ?? 0;
-                $productCode = trim($row[7]);
-                $purchasePrice = (float)($row[8] ?? 0);
-                $salePrice = (float)($row[9] ?? 0);
-                $dealerPrice = (float)($row[10] ?? $salePrice);
-                $wholesalePrice = (float)($row[11] ?? $salePrice);
-                $taxName = trim($row[12]);
-                $taxPercent = (float)($row[13] ?? 0);
-                $taxType = $row[14] ?? 'exclusive';
-                $alertQty = (int)($row[15] ?? 0);
-                $expireDate = $this->parseExcelDate($row[16]);
-                $manufacturingDate = $row[17] ?? null;
-                $batchNo = $row[18] ?? null;
+                $strength = trim($row[4] ?? '');
+                $genericName = trim($row[5] ?? '');
+                $manufacturerName = trim($row[6]);
+                $boxSize = trim($row[7]);
+                $stockQty = $row[8] ?? 0;
+                $productCode = trim($row[9]);
+                $purchasePrice = (float)($row[10] ?? 0);
+                $salePrice = (float)($row[11] ?? 0);
+                $dealerPrice = (float)($row[12] ?? $salePrice);
+                $wholesalePrice = (float)($row[13] ?? $salePrice);
+                $taxName = trim($row[14]);
+                $taxPercent = (float)($row[15] ?? 0);
+                $taxType = $row[16] ?? 'exclusive';
+                $alertQty = (int)($row[17] ?? 0);
+                $expireDate = $this->parseExcelDate($row[18]);
+                $manufacturingDate = $row[19] ?? null;
+                $batchNo = $row[20] ?? null;
 
                 if (!$productName || !$categoryName) {
                     continue;
@@ -117,8 +119,18 @@ class ProductImport implements ToCollection
                 )->id;
 
                 // Create product
+                // Prepare meta array with both strength and generic_name
+                $meta = [];
+                if ($strength) {
+                    $meta['strength'] = $strength;
+                }
+                if ($genericName) {
+                    $meta['generic_name'] = $genericName;
+                }
+                
                 $product = Product::create([
                     'productName' => $productName,
+                    'generic_name' => $genericName ?: null,
                     'business_id' => $this->businessId,
                     'unit_id' => $unitId,
                     'type_id' => $medicineTypeId,
@@ -131,6 +143,7 @@ class ProductImport implements ToCollection
                     'tax_amount' => $taxAmount,
                     'alert_qty' => $alertQty,
                     'expire_date' => $expireDate,
+                    'meta' => !empty($meta) ? $meta : null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

@@ -98,7 +98,7 @@
                                 </th>
                                 <th class="table-header-content"> {{ __('SL') }}. </th>
                                 <th class="table-header-content"> {{ __('Image') }} </th>
-                                <th class="table-header-content"> {{ __('Product Name') }} </th>
+                                <th class="table-header-content" style="min-width: 400px; width: 400px;"> {{ __('Product Name') }} </th>
                                 <th class="table-header-content"> {{ __('Code') }} </th>
                                 <th class="table-header-content"> {{ __('Category') }} </th>
                                 <th class="table-header-content"> {{ __('Unit') }} </th>
