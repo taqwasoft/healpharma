@@ -60,8 +60,8 @@
                     </div>
                 </div>
                 <div class="products-container">
-                    <div class=" scroll-card">
-                        <div class="search-product-card products gap-2 @if (count($products) === 1) single-product @endif product-list-container" id="products-list">
+                    <div class="scroll-card">
+                        <div class="products product-list-container" id="products-list">
                             @include('business::sales.product-list')
                         </div>
                     </div>

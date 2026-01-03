@@ -137,6 +137,7 @@ class AcnooSaleController extends Controller
             ->where('business_id', $business_id)
             ->nonExpired()
             ->latest()
+            ->limit(20)
             ->get();
 
         $categories = Category::where('business_id', $business_id)->latest()->get();
@@ -392,6 +393,7 @@ class AcnooSaleController extends Controller
             ->where('business_id', $business_id)
             ->nonExpired()
             ->latest()
+            ->limit(20)
             ->get();
 
         $categories = Category::where('business_id', $business_id)->latest()->get();
@@ -428,7 +430,7 @@ class AcnooSaleController extends Controller
                     'purchase_with_tax' => $detail->purchase_with_tax,
                     'batch_no' => $batchNo,
                     'expire_date' => $detail->expire_date,
-                    'product_image' => $detail->product->images[0] ?? '',
+                    'product_image' => $detail->product->images[0] ?? null,
                 ],
             ]);
         }

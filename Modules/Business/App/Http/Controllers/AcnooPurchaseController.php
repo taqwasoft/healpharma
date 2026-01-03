@@ -60,10 +60,12 @@ class AcnooPurchaseController extends Controller
             ->latest()
             ->get();
 
-        $products = Product::with('category:id,categoryName', 'unit:id,unitName', 'stocks:id,product_id,batch_no,expire_date')
+        // Load only top 50 products initially - rest will load via AJAX search
+        $products = Product::with('category:id,categoryName', 'unit:id,unitName', 'stocks:id,product_id,batch_no,expire_date,purchase_with_tax,purchase_without_tax,profit_percent,sales_price,wholesale_price,dealer_price')
             ->where('business_id', $business_id)
             ->withSum('stocks', 'productStock')
             ->latest()
+            ->limit(20)
             ->get();
 
         $cart_contents = Cart::content()->filter(fn($item) => $item->options->type == 'purchase');
@@ -286,10 +288,12 @@ class AcnooPurchaseController extends Controller
             ->latest()
             ->get();
 
+        // Load only top 50 products initially - rest will load via AJAX search
         $products = Product::with('stocks', 'category:id,categoryName', 'unit:id,unitName',)
             ->where('business_id', auth()->user()->business_id)
             ->withSum('stocks', 'productStock')
             ->latest()
+            ->limit(20)
             ->get();
 
         $categories = Category::where('business_id', auth()->user()->business_id)->latest()->get();
@@ -315,7 +319,7 @@ class AcnooPurchaseController extends Controller
                     'sales_price' => $detail->sales_price,
                     'profit_percent' => $detail->product->profit_percent,
                     'product_unit_name' => $detail->product->unit->unitName ?? '',
-                    'product_image' => $detail->product->images[0] ?? '',
+                    'product_image' => $detail->product->images[0] ?? null,
                 ],
             ]);
         }
@@ -672,7 +676,7 @@ class AcnooPurchaseController extends Controller
 
     public function productFilter(Request $request)
     {
-        $products = Product::where('business_id', auth()->user()->business_id)
+        $query = Product::where('business_id', auth()->user()->business_id)
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
                     $q->where('productName', 'like', '%' . $request->search . '%')
@@ -681,12 +685,25 @@ class AcnooPurchaseController extends Controller
             })
             ->when($request->category_id, function ($query) use ($request) {
                 $query->where('category_id', $request->category_id);
-            })
+            });
+
+        // Get total count before limiting results
+        $total_products = $query->count();
+
+        // Limit results to improve performance
+        // Load more with eager loading only needed relationships
+        $products = $query
+            ->with([
+                'category:id,categoryName',
+                'unit:id,unitName',
+                'stocks' => function($query) {
+                    $query->select('id', 'product_id', 'batch_no', 'expire_date', 'purchase_with_tax', 'purchase_without_tax', 'profit_percent', 'sales_price', 'wholesale_price', 'dealer_price', 'productStock');
+                }
+            ])
+            ->withSum('stocks', 'productStock')
             ->latest()
+            ->limit(20) // Limit to 20 products for better performance
             ->get();
-
-
-        $total_products = $products->count();
 
         if ($request->ajax()) {
             return response()->json([
