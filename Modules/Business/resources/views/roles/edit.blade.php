@@ -123,8 +123,68 @@
                                                                     @php
                                                                         $key = strtolower($action);
                                                                         $id = $module . '_' . $key;
-                                                                        $name = 'permissions' . '[' . $module . ']' . '[' . $key . ']';
-                                                                        $is_checked = isset($user->visibility[$module][$key]) && $user->visibility[$module][$key] == 1;
+                                                                        
+                                                                        // Map nested keys to flat keys used by visible_permission()
+                                                                        $permissionMap = [
+                                                                            'sales.create' => 'salePermission',
+                                                                            'sales.read' => 'salesListPermission',
+                                                                            'sales.update' => 'salePermission',
+                                                                            'sales.delete' => 'salePermission',
+                                                                            'purchases.create' => 'purchasePermission',
+                                                                            'purchases.read' => 'purchaseListPermission',
+                                                                            'purchases.update' => 'purchasePermission',
+                                                                            'purchases.delete' => 'purchasePermission',
+                                                                            'products.create' => 'productPermission',
+                                                                            'products.read' => 'productPermission',
+                                                                            'products.update' => 'productPermission',
+                                                                            'products.delete' => 'productPermission',
+                                                                            'stocks.create' => 'stockPermission',
+                                                                            'stocks.read' => 'stockPermission',
+                                                                            'stocks.update' => 'stockPermission',
+                                                                            'stocks.delete' => 'stockPermission',
+                                                                            'parties.create' => 'partiesPermission',
+                                                                            'parties.read' => 'partiesPermission',
+                                                                            'parties.update' => 'partiesPermission',
+                                                                            'parties.delete' => 'partiesPermission',
+                                                                            'income.create' => 'addIncomePermission',
+                                                                            'income.read' => 'addIncomePermission',
+                                                                            'income.update' => 'addIncomePermission',
+                                                                            'income.delete' => 'addIncomePermission',
+                                                                            'expense.create' => 'addExpensePermission',
+                                                                            'expense.read' => 'addExpensePermission',
+                                                                            'expense.update' => 'addExpensePermission',
+                                                                            'expense.delete' => 'addExpensePermission',
+                                                                            'dues.read' => 'dueListPermission',
+                                                                            'supplier-dues.read' => 'dueListPermission',
+                                                                            'loss-profit.read' => 'lossProfitPermission',
+                                                                            'transaction-history.read' => 'lossProfitPermission',
+                                                                            'sale-reports.read' => 'reportsPermission',
+                                                                            'sale-return-reports.read' => 'reportsPermission',
+                                                                            'purchase-reports.read' => 'reportsPermission',
+                                                                            'purchase-return-reports.read' => 'reportsPermission',
+                                                                            'income-reports.read' => 'reportsPermission',
+                                                                            'expense-reports.read' => 'reportsPermission',
+                                                                            'stock-reports.read' => 'reportsPermission',
+                                                                            'due-reports.read' => 'reportsPermission',
+                                                                            'supplier-due-reports.read' => 'reportsPermission',
+                                                                            'loss-profit-reports.read' => 'reportsPermission',
+                                                                            'transaction-history-reports.read' => 'reportsPermission',
+                                                                            'subscription-reports.read' => 'reportsPermission',
+                                                                            'expired-product-reports.read' => 'reportsPermission',
+                                                                        ];
+                                                                        
+                                                                        $mapKey = $module . '.' . $key;
+                                                                        $flatKey = $permissionMap[$mapKey] ?? null;
+                                                                        
+                                                                        // Check both old nested format and new flat format for backward compatibility
+                                                                        $is_checked = false;
+                                                                        if ($flatKey && isset($user->visibility[$flatKey])) {
+                                                                            $is_checked = $user->visibility[$flatKey] == 1;
+                                                                        } elseif (isset($user->visibility[$module][$key])) {
+                                                                            $is_checked = $user->visibility[$module][$key] == 1;
+                                                                        }
+                                                                        
+                                                                        $name = $flatKey ? 'permissions[' . $flatKey . ']' : 'permissions[' . $module . '][' . $key . ']';
                                                                     @endphp
 
                                                                     <div class="custom-control custom-checkbox mr-3 me-lg-5 d-flex align-items-center gap-2">
