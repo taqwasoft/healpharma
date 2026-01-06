@@ -232,26 +232,59 @@ function updatePrices() {
     // Profit calc always based on exclusive
     let calculatedSalesPrice = purchaseExclusivePrice + (purchaseExclusivePrice * profitPercent) / 100;
 
-    $("#sales_price").val(formatNumber(calculatedSalesPrice));
+    // Don't update sales_price - let user enter it manually
+    // $("#sales_price").val(formatNumber(calculatedSalesPrice));
+    $("#wholesale_price").val(formatNumber(calculatedSalesPrice));
+    $("#dealer_price").val(formatNumber(calculatedSalesPrice));
+}
+
+// Update prices without reformatting the exclusive price field
+function updatePricesWithoutExclusive() {
+    let purchaseExclusivePrice = parseFloat($("#purchase_exclusive_price").val()) || 0;
+    let profitPercent = parseFloat($("#profit_percent").val()) || 0;
+
+    // Profit calc always based on exclusive
+    let calculatedSalesPrice = purchaseExclusivePrice + (purchaseExclusivePrice * profitPercent) / 100;
+
+    // Don't update sales_price - let user enter it manually
+    // Update wholesale and dealer prices
     $("#wholesale_price").val(formatNumber(calculatedSalesPrice));
     $("#dealer_price").val(formatNumber(calculatedSalesPrice));
 }
 
 
 $("#purchase_exclusive_price").on("input", function () {
-    let exclusivePrice = parseFloat($(this).val()) || 0;
-    $("#purchase_inclusive_price").val(formatNumber(exclusivePrice));
-    updatePrices();
+    let value = $(this).val();
+    
+    // Allow empty field
+    if (value === '' || value === null) {
+        $("#purchase_inclusive_price").val('');
+        return;
+    }
+    
+    // Just sync the value, don't format the current field
+    let exclusivePrice = parseFloat(value) || 0;
+    $("#purchase_inclusive_price").val(value); // Keep same format
+    updatePricesWithoutExclusive();
 });
 
 $("#purchase_inclusive_price").on("input", function () {
-    let inclusivePrice = parseFloat($(this).val()) || 0;
-    $("#purchase_exclusive_price").val(formatNumber(inclusivePrice));
-    updatePrices();
+    let value = $(this).val();
+    
+    // Allow empty field
+    if (value === '' || value === null) {
+        $("#purchase_exclusive_price").val('');
+        return;
+    }
+    
+    // Just sync the value, don't format the current field
+    let inclusivePrice = parseFloat(value) || 0;
+    $("#purchase_exclusive_price").val(value); // Keep same format
+    updatePricesWithoutExclusive();
 });
 
 $("#profit_percent").on("input", function () {
-    updatePrices();
+    updatePricesWithoutExclusive();
 });
 
 /** Purchase Modal Calculation End **/

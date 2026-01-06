@@ -71,9 +71,28 @@ class ProductImport implements ToCollection
                     continue;
                 }
 
-                // Skip duplicates only if productCode exists
-                if ($productCode && in_array($productCode, $this->existingProductCodes)) continue;
+                // Skip duplicates within the same Excel file
                 if ($productCode && in_array($productCode, $this->excelProductCodes)) continue;
+
+                // Check if product already exists in database
+                if ($productCode && in_array($productCode, $this->existingProductCodes)) {
+                    // Update only sale price for existing product
+                    $existingProduct = Product::where('productCode', $productCode)
+                        ->where('business_id', $this->businessId)
+                        ->first();
+                    
+                    if ($existingProduct) {
+                        // Update sales price in stock
+                        Stock::where('product_id', $existingProduct->id)
+                            ->where('business_id', $this->businessId)
+                            ->update(['sales_price' => $salePrice]);
+                    }
+                    
+                    if ($productCode) {
+                        $this->excelProductCodes[] = $productCode;
+                    }
+                    continue;
+                }
 
                 // Tax & profit calculation
                 $taxAmount = ($purchasePrice * $taxPercent) / 100;
