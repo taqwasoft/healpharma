@@ -377,8 +377,13 @@ function calTotalAmount() {
     let payable_amount = rounding_total;
     $("#payable_amount").text(currencyFormat(payable_amount));
 
-    // Receive Amount
+    // Receive Amount - Auto-fill with payable amount
     let receive_amount = getNumericValue($("#receive_amount").val()) || 0;
+    
+    // Always auto-update receive amount to match payable amount
+    receive_amount = payable_amount;
+    $("#receive_amount").val(formattedAmount(receive_amount, 2));
+    
     if (receive_amount < 0) {
         toastr.error("Receive amount cannot be less than 0!");
         receive_amount = 0;

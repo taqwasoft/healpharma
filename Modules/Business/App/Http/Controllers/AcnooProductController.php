@@ -86,8 +86,26 @@ class AcnooProductController extends Controller
         $box_sizes = BoxSize::where('business_id', auth()->user()->business_id)->whereStatus(1)->latest()->get();
         $manufactures = Manufacturer::where('business_id', auth()->user()->business_id)->whereStatus(1)->latest()->get();
         $taxes = Tax::where('business_id', auth()->user()->business_id)->latest()->get();
-        $product_id = (Product::max('id') ?? 0) + 1;
-        $code = str_pad($product_id, 4, '0', STR_PAD_LEFT);
+        
+        // Generate unique product code efficiently for this business
+        $business_id = auth()->user()->business_id;
+        
+        // Get the last product code that starts with 'A' for this business
+        $lastProduct = Product::where('business_id', $business_id)
+                            ->where('productCode', 'LIKE', 'A%')
+                            ->orderByRaw('CAST(SUBSTRING(productCode, 2) AS UNSIGNED) DESC')
+                            ->first();
+        
+        if ($lastProduct && preg_match('/^A(\d+)$/', $lastProduct->productCode, $matches)) {
+            // Increment the last number
+            $nextNumber = intval($matches[1]) + 1;
+        } else {
+            // Start from 1 if no products exist
+            $nextNumber = 1;
+        }
+        
+        // Format: A + 5 digits (e.g., A00001, A00123, A12345)
+        $code = 'A' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
         return view('business::products.create', compact('categories', 'units', 'medicine_types', 'box_sizes', 'manufactures', 'code', 'taxes'));
     }

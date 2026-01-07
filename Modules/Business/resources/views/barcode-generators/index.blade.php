@@ -44,7 +44,7 @@
                             <div class="row g-3 barcode-info-row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                        <input type="checkbox" name="product_name" class="select-all-delete multi-delete"
+                                        <input type="checkbox" name="product_name" value="1" class="select-all-delete multi-delete"
                                             checked>
                                         <p>{{ __('Product Name') }}</p>
                                     </div>
@@ -52,43 +52,43 @@
                                     <div class="d-flex align-items-center barcode-info">
                                         <h5>{{ __('Size') }}</h5>
                                         <input type="number" name="product_name_size" class="form-control"
-                                            placeholder="15">
+                                            placeholder="15" value="15">
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                        <input type="checkbox" name="product_price" class="select-all-delete multi-delete"
+                                        <input type="checkbox" name="product_price" value="1" class="select-all-delete multi-delete"
                                             checked>
                                         <p>{{ __('Product Price') }}</p>
                                     </div>
                                     <div class="d-flex align-items-center barcode-info">
                                         <h5>{{ __('Size') }}</h5>
                                         <input type="number" name="product_price_size" class="form-control"
-                                            placeholder="14">
+                                            placeholder="14" value="14">
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                        <input type="checkbox" name="product_code" class="select-all-delete multi-delete"
+                                        <input type="checkbox" name="product_code" value="1" class="select-all-delete multi-delete"
                                             checked>
                                         <p>{{ __('Product Code') }}</p>
                                     </div>
                                     <div class="d-flex align-items-center barcode-info">
                                         <h5>{{ __('Size') }}</h5>
                                         <input type="number" name="product_code_size" class="form-control"
-                                            placeholder="14">
+                                            placeholder="14" value="14">
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                        <input type="checkbox" name="pack_date" class="select-all-delete multi-delete"
+                                        <input type="checkbox" name="pack_date" value="1" class="select-all-delete multi-delete"
                                             checked>
                                         <p>{{ __('Print packing date') }}</p>
                                     </div>
 
                                     <div class="d-flex align-items-center barcode-info">
                                         <h5>{{ __('Size') }}</h5>
-                                        <input type="number" name="pack_date_size" class="form-control" placeholder="12">
+                                        <input type="number" name="pack_date_size" class="form-control" placeholder="12" value="12">
                                     </div>
                                 </div>
                                 <div class="col-lg-3">

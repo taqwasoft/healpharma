@@ -42,11 +42,11 @@
         <table class="ph-invoice-table">
             <thead>
             <tr>
-                <th class="text-center invoice-sl">{{ __('SL') }}</th>
-                <th>{{ __('Product') }}</th>
-                <th>{{ __('QTY') }}</th>
-                <th>{{ __('U.Price') }}</th>
-                <th class="text-end">{{ __('Amount') }}</th>
+                <th class="text-center invoice-sl" style="font-weight: bold;">{{ __('SL') }}</th>
+                <th style="font-weight: bold;">{{ __('Product') }}</th>
+                <th style="font-weight: bold;">{{ __('QTY') }}</th>
+                <th style="font-weight: bold;">{{ __('U.Price') }}</th>
+                <th class="text-end" style="font-weight: bold;">{{ __('Amount') }}</th>
             </tr>
             </thead>
             @php
@@ -59,11 +59,11 @@
                 $subtotal += $productTotal;
             @endphp
             <tr>
-                <td class="text-center invoice-sl">{{ $loop->iteration }}</td>
-                <td>{{ $detail->product->productName ?? '' }}</td>
-                <td class="text-center">{{ $detail->quantities ?? '' }}</td>
-                <td class="text-center"> {{ currency_format($detail->price ?? 0, 'icon', 2, business_currency()) }}</td>
-                <td class="text-end">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>
+                <td class="text-center invoice-sl" style="font-weight: bold;">{{ $loop->iteration }}</td>
+                <td style="font-weight: bold;">{{ $detail->product->productName ?? '' }}</td>
+                <td class="text-center" style="font-weight: bold;">{{ $detail->quantities ?? '' }}</td>
+                <td class="text-center" style="font-weight: bold;">{{ currency_format($detail->price ?? 0, 'icon', 2, business_currency()) }}</td>
+                <td class="text-end" style="font-weight: bold;">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>
             </tr>
             @endforeach
             <tr>
@@ -120,10 +120,10 @@
             <thead>
             <tr>
 
-                <th class="invoice-th">{{ __('Date') }}</th>
-                <th class="invoice-th">{{ __('Return Product') }}</th>
-                <th class="invoice-th">{{ __('QTY') }}</th>
-                <th class="invoice-th text-end">{{ __('Amount') }}</th>
+                <th class="invoice-th" style="font-weight: bold;">{{ __('Date') }}</th>
+                <th class="invoice-th" style="font-weight: bold;">{{ __('Return Product') }}</th>
+                <th class="invoice-th" style="font-weight: bold;">{{ __('QTY') }}</th>
+                <th class="invoice-th text-end" style="font-weight: bold;">{{ __('Amount') }}</th>
             </tr>
             </thead>
             @php $total_return_amount = 0; @endphp
@@ -135,10 +135,10 @@
                 @endphp
             <tr>
 
-                <td class="text-start">{{ formatted_date($return->return_date) }}</td>
-                <td>{{ $detail->saleDetail->product->productName ?? '' }}</td>
-                <td class="text-center">{{ $detail->return_qty ?? 0 }}</td>
-                <td class="text-end"> {{ currency_format($detail->return_amount ?? 0, 'icon', 2, business_currency()) }}</td>
+                <td class="text-start" style="font-weight: bold;">{{ formatted_date($return->return_date) }}</td>
+                <td style="font-weight: bold;">{{ $detail->saleDetail->product->productName ?? '' }}</td>
+                <td class="text-center" style="font-weight: bold;">{{ $detail->return_qty ?? 0 }}</td>
+                <td class="text-end" style="font-weight: bold;">{{ currency_format($detail->return_amount ?? 0, 'icon', 2, business_currency()) }}</td>
             </tr>
             @endforeach
            @endforeach
@@ -184,11 +184,11 @@
         <table class="ph-invoice-table">
             <thead>
             <tr>
-                <th class="text-center invoice-sl">{{ __('SL') }}</th>
-                <th>{{ __('Product') }}</th>
-                <th>{{ __('QTY') }}</th>
-                <th>{{ __('U.Price') }}</th>
-                <th class="text-end">{{ __('Amount') }}</th>
+                <th class="text-center invoice-sl" style="font-weight: bold;">{{ __('SL') }}</th>
+                <th style="font-weight: bold;">{{ __('Product') }}</th>
+                <th style="font-weight: bold;">{{ __('QTY') }}</th>
+                <th style="font-weight: bold;">{{ __('U.Price') }}</th>
+                <th class="text-end" style="font-weight: bold;">{{ __('Amount') }}</th>
             </tr>
             </thead>
             @php $subtotal = 0; @endphp
@@ -199,11 +199,11 @@
                 $subtotal += $productTotal;
             @endphp
             <tr>
-                <td class="text-center invoice-sl">{{ $loop->iteration }}</td>
-                <td>{{ $detail->product->productName ?? '' }}</td>
-                <td class="text-center">{{ $detail->quantities ?? '' }}</td>
-                <td class="text-center"> {{ currency_format($detail->price ?? 0, 'icon', 2, business_currency()) }}</td>
-                <td class="text-end">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>
+                <td class="text-center invoice-sl" style="font-weight: bold;">{{ $loop->iteration }}</td>
+                <td style="font-weight: bold;">{{ $detail->product->productName ?? '' }}</td>
+                <td class="text-center" style="font-weight: bold;">{{ $detail->quantities ?? '' }}</td>
+                <td class="text-center" style="font-weight: bold;"> {{ currency_format($detail->price ?? 0, 'icon', 2, business_currency()) }}</td>
+                <td class="text-end" style="font-weight: bold;">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>
             </tr>
             @endforeach
             <tr>

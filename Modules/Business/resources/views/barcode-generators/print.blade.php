@@ -5,29 +5,31 @@
 @endsection
 
 @section('main_content')
-    <div id="barcodePrintArea" class="barcode-container ">
-        <div class="row g-2 ">
+    <div id="barcodePrintArea" class="barcode-container">
+        <div class="barcode-print-wrapper">
             @foreach ($generatedBarcodes ?? [] as $barcode)
-                <div class="col-md-3">
+                <div class="barcode-item">
                     <div class="barcode-content">
-                        @if ($barcode['show_product_name'])
-                            <p class="title" style="font-size: {{ $barcode['product_name_size'] }}px;">
+                        @if (isset($barcode['show_product_name']) && $barcode['show_product_name'])
+                            <p class="title">
                                 {{ $barcode['product_name'] }}
                             </p>
                         @endif
-                        @if ($barcode['show_product_price'])
-                            <p class="price" style="font-size: {{ $barcode['product_price_size'] }}px;">
-                                {{__('Price')}}: <span>{{ currency_format($barcode['product_price'], currency:business_currency()) }}</span>
+                        @if (isset($barcode['show_product_price']) && $barcode['show_product_price'])
+                            <p class="price">
+                                {{__('Price')}}: {{ currency_format($barcode['product_price'], currency:business_currency()) }}
                             </p>
                         @endif
-                        @if ($barcode['show_pack_date'])
-                            <p class="date" style="font-size: {{ $barcode['pack_date_size'] }}px;">
+                        @if (isset($barcode['show_pack_date']) && $barcode['show_pack_date'])
+                            <p class="date">
                                 {{__('Packing Date')}}: {{ $barcode['packing_date'] }}
                             </p>
                         @endif
-                        <img src="data:image/png;base64,{{ base64_encode($barcode['barcode_svg']) }}" alt="Barcode Image">
-                        @if ($barcode['show_product_code'])
-                            <p class="number" style="font-size: {{ $barcode['product_code_size'] }}px;">
+                        <div class="barcode-image">
+                            {!! $barcode['barcode_svg'] !!}
+                        </div>
+                        @if (isset($barcode['show_product_code']) && $barcode['show_product_code'])
+                            <p class="number">
                                 {{ $barcode['product_code'] }}
                             </p>
                         @endif

@@ -614,8 +614,15 @@ $barcodeForm.initFormValidation(),
                         location.href = e.redirect;
                     }
                 },
-                error: function (e) {
+                error: function (xhr) {
                     t.html(a).attr("disabled", false);
+                    
+                    // Display error message
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        alert(xhr.responseJSON.message);
+                    } else {
+                        alert("An error occurred while generating barcodes. Please try again.");
+                    }
                 },
             });
         }
