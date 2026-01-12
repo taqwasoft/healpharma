@@ -37,13 +37,13 @@
                                 {{__('Product')}}
                             </button>
                         </li>
-
-                        <li class="nav-item settings-item" role="presentation">
+                        {{-- TODO invoice print 80m --}}
+                        {{-- <li class="nav-item settings-item" role="presentation">
                             <button class="nav-link settings-link" id="invoice-tab" data-bs-toggle="tab"
                                 data-bs-target="#invoice" type="button" role="tab">
                                 {{__('Invoice Print')}}
                             </button>
-                        </li>
+                        </li> --}}
                         <li class="nav-item settings-item" role="presentation">
                             <button class="nav-link settings-link" id="role-tab" data-bs-toggle="tab"
                                 data-bs-target="#role" type="button" role="tab">
