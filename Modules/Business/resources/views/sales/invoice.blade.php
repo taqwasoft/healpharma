@@ -60,7 +60,7 @@
             @endphp
             <tr>
                 <td class="text-center invoice-sl" style="font-weight: bold;">{{ $loop->iteration }}</td>
-                <td style="font-weight: bold;">{{ $detail->product->productName ?? '' }}</td>
+                <td style="font-weight: bold;">{{ $detail->product->formatted_name ?? $detail->product->productName ?? '' }}</td>
                 <td class="text-center" style="font-weight: bold;">{{ $detail->quantities ?? '' }}</td>
                 <td class="text-center" style="font-weight: bold;">{{ currency_format($detail->price ?? 0, 'icon', 2, business_currency()) }}</td>
                 <td class="text-end" style="font-weight: bold;">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>
@@ -136,7 +136,7 @@
             <tr>
 
                 <td class="text-start" style="font-weight: bold;">{{ formatted_date($return->return_date) }}</td>
-                <td style="font-weight: bold;">{{ $detail->saleDetail->product->productName ?? '' }}</td>
+                <td style="font-weight: bold;">{{ $detail->saleDetail->product->formatted_name ?? $detail->saleDetail->product->productName ?? '' }}</td>
                 <td class="text-center" style="font-weight: bold;">{{ $detail->return_qty ?? 0 }}</td>
                 <td class="text-end" style="font-weight: bold;">{{ currency_format($detail->return_amount ?? 0, 'icon', 2, business_currency()) }}</td>
             </tr>
@@ -200,7 +200,7 @@
             @endphp
             <tr>
                 <td class="text-center invoice-sl" style="font-weight: bold;">{{ $loop->iteration }}</td>
-                <td style="font-weight: bold;">{{ $detail->product->productName ?? '' }}</td>
+                <td style="font-weight: bold;">{{ $detail->product->formatted_name ?? $detail->product->productName ?? '' }}</td>
                 <td class="text-center" style="font-weight: bold;">{{ $detail->quantities ?? '' }}</td>
                 <td class="text-center" style="font-weight: bold;"> {{ currency_format($detail->price ?? 0, 'icon', 2, business_currency()) }}</td>
                 <td class="text-end" style="font-weight: bold;">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>

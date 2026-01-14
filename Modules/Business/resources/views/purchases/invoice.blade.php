@@ -60,7 +60,7 @@
             @endphp
             <tr>
                 <td class="text-center invoice-sl">{{ $loop->iteration }}</td>
-                <td>{{ $detail->product->productName ?? '' }}</td>
+                <td>{{ $detail->product->formatted_name ?? $detail->product->productName ?? '' }}</td>
                 <td class="text-center">{{ $detail->quantities ?? '' }}</td>
                 <td class="text-center"> {{ currency_format($detail->purchase_with_tax ?? 0, 'icon', 2, business_currency()) }}</td>
                 <td class="text-end">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>
@@ -130,7 +130,7 @@
             <tr>
 
                 <td class="text-start">{{ formatted_date($return->return_date) }}</td>
-                <td>{{ $detail->purchaseDetail->product->productName ?? '' }}</td>
+                <td>{{ $detail->purchaseDetail->product->formatted_name ?? $detail->purchaseDetail->product->productName ?? '' }}</td>
                 <td class="text-center">{{ $detail->return_qty ?? 0 }}</td>
                 <td class="text-end"> {{ currency_format($detail->return_amount ?? 0, 'icon', 2, business_currency()) }}</td>
             </tr>
@@ -194,7 +194,7 @@
             @endphp
             <tr>
                 <td class="text-center invoice-sl">{{ $loop->iteration }}</td>
-                <td>{{ $detail->product->productName ?? '' }}</td>
+                <td>{{ $detail->product->formatted_name ?? $detail->product->productName ?? '' }}</td>
                 <td class="text-center">{{ $detail->quantities ?? '' }}</td>
                 <td class="text-center"> {{ currency_format($detail->purchase_with_tax ?? 0, 'icon', 2, business_currency()) }}</td>
                 <td class="text-end">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>

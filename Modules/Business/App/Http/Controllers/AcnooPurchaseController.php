@@ -696,6 +696,7 @@ class AcnooPurchaseController extends Controller
             ->with([
                 'category:id,categoryName',
                 'unit:id,unitName',
+                'medicine_type:id,name',
                 'stocks' => function($query) {
                     $query->select('id', 'product_id', 'batch_no', 'expire_date', 'purchase_with_tax', 'purchase_without_tax', 'profit_percent', 'sales_price', 'wholesale_price', 'dealer_price', 'productStock');
                 }
@@ -718,10 +719,10 @@ class AcnooPurchaseController extends Controller
 
     public function getInvoice($purchase_id)
     {
-        $purchase = Purchase::with('user:id,name,role', 'party:id,name,phone', 'business:id,phoneNumber,companyName,tax_name,tax_no,address', 'details:id,purchase_with_tax,quantities,product_id,purchase_id', 'details.product:id,productName', 'payment_type:id,name')
+        $purchase = Purchase::with('user:id,name,role', 'party:id,name,phone', 'business:id,phoneNumber,companyName,tax_name,tax_no,address', 'details:id,purchase_with_tax,quantities,product_id,purchase_id', 'details.product:id,productName,type_id,meta', 'details.product.medicine_type:id,name', 'payment_type:id,name')
             ->findOrFail($purchase_id);
 
-        $purchase_returns = PurchaseReturn::with('purchase:id,party_id,isPaid,totalAmount,dueAmount,paidAmount,invoiceNumber', 'purchase.party:id,name', 'details', 'details.purchaseDetail.product:id,productName')
+        $purchase_returns = PurchaseReturn::with('purchase:id,party_id,isPaid,totalAmount,dueAmount,paidAmount,invoiceNumber', 'purchase.party:id,name', 'details', 'details.purchaseDetail.product:id,productName,type_id,meta', 'details.purchaseDetail.product.medicine_type:id,name')
             ->where('business_id', auth()->user()->business_id)
             ->where('purchase_id', $purchase_id)
             ->latest()

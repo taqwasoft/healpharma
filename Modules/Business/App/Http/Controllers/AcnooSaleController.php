@@ -103,6 +103,7 @@ class AcnooSaleController extends Controller
             ->when($request->manufacturer_id, function ($query) use ($request) {
                 $query->where('manufacturer_id', $request->manufacturer_id);
             })
+            ->with('medicine_type:id,name')
             ->latest()
             ->get();
 
@@ -838,9 +839,9 @@ class AcnooSaleController extends Controller
 
     public function getInvoice($sale_id)
     {
-        $sale = Sale::where('business_id', auth()->user()->business_id)->with('user:id,name,role', 'party:id,name,phone,address', 'business:id,phoneNumber,companyName,address,tax_name,tax_no', 'details:id,price,quantities,product_id,sale_id', 'details.product:id,productName', 'payment_type:id,name')->findOrFail($sale_id);
+        $sale = Sale::where('business_id', auth()->user()->business_id)->with('user:id,name,role', 'party:id,name,phone,address', 'business:id,phoneNumber,companyName,address,tax_name,tax_no', 'details:id,price,quantities,product_id,sale_id', 'details.product:id,productName,type_id,meta', 'details.product.medicine_type:id,name', 'payment_type:id,name')->findOrFail($sale_id);
 
-        $sale_returns = SaleReturn::with('sale:id,party_id,isPaid,totalAmount,dueAmount,paidAmount,invoiceNumber', 'sale.party:id,name', 'details', 'details.saleDetail.product:id,productName')
+        $sale_returns = SaleReturn::with('sale:id,party_id,isPaid,totalAmount,dueAmount,paidAmount,invoiceNumber', 'sale.party:id,name', 'details', 'details.saleDetail.product:id,productName,type_id,meta', 'details.saleDetail.product.medicine_type:id,name')
             ->where('business_id', auth()->user()->business_id)
             ->where('sale_id', $sale_id)
             ->latest()

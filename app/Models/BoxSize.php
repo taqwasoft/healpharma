@@ -11,6 +11,7 @@ class BoxSize extends Model
 
     protected $fillable = [
         'name',
+        'value',
         'business_id',
         'status'
     ];

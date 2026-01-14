@@ -114,4 +114,26 @@ class Product extends Model
         'wholesale_price' => 'double',
         'stocks_sum_product_stock' => 'integer',
     ];
+
+    /**
+     * Get formatted product name with medicine type and strength
+     * Format: (Medicine Type)ProductName-Strength
+     * Example: (Tablet)Amlopin-5 mg
+     */
+    public function getFormattedNameAttribute(): string
+    {
+        $name = $this->productName;
+        
+        // Add medicine type if available
+        if ($this->medicine_type && $this->medicine_type->name) {
+            $name = '(' . $this->medicine_type->name . ')' . $name;
+        }
+        
+        // Add strength if available in meta
+        if (isset($this->meta['strength']) && !empty($this->meta['strength'])) {
+            $name .= '-' . $this->meta['strength'];
+        }
+        
+        return $name;
+    }
 }

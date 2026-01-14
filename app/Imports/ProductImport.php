@@ -14,9 +14,10 @@ use App\Models\Category;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class ProductImport implements ToCollection
+class ProductImport implements ToCollection, WithChunkReading
 {
     protected $businessId;
     protected $categories = [];
@@ -38,32 +39,41 @@ class ProductImport implements ToCollection
             ->toArray();
     }
 
+    public function chunkSize(): int
+    {
+        return 100; // Process 100 rows at a time
+    }
+
     public function collection(Collection $rows)
     {
-        DB::transaction(function () use ($rows) {
-            foreach ($rows as $index => $row) {
-                if ($index === 0) continue; // Skip the header
+        // Process in smaller batches
+        $rows->chunk(50)->each(function ($chunk) {
+            DB::transaction(function () use ($chunk) {
+                foreach ($chunk as $index => $row) {
+                    // Skip header row only in first chunk
+                    if ($index === 0 && !isset($row[0])) continue;
+                    if (empty($row[0]) || $row[0] == 'Product Name' || $row[0] == 'productName') continue;
 
                 // Read Excel fields
-                $productName = trim($row[0]);
-                $categoryName = trim($row[1]);
-                $unitName = trim($row[2]);
-                $medicineType = trim($row[3]);
+                $productName = trim($row[0] ?? '');
+                $categoryName = trim($row[1] ?? '');
+                $unitName = trim($row[2] ?? '');
+                $medicineType = trim($row[3] ?? '');
                 $strength = trim($row[4] ?? '');
                 $genericName = trim($row[5] ?? '');
-                $manufacturerName = trim($row[6]);
-                $boxSize = trim($row[7]);
+                $manufacturerName = trim($row[6] ?? '');
+                $boxSize = trim($row[7] ?? '');
                 $stockQty = $row[8] ?? 0;
-                $productCode = trim($row[9]);
+                $productCode = trim($row[9] ?? '');
                 $purchasePrice = (float)($row[10] ?? 0);
                 $salePrice = (float)($row[11] ?? 0);
                 $dealerPrice = (float)($row[12] ?? $salePrice);
                 $wholesalePrice = (float)($row[13] ?? $salePrice);
-                $taxName = trim($row[14]);
+                $taxName = trim($row[14] ?? '');
                 $taxPercent = (float)($row[15] ?? 0);
                 $taxType = $row[16] ?? 'exclusive';
                 $alertQty = (int)($row[17] ?? 0);
-                $expireDate = $this->parseExcelDate($row[18]);
+                $expireDate = $this->parseExcelDate($row[18] ?? null);
                 $manufacturingDate = $row[19] ?? null;
                 $batchNo = $row[20] ?? null;
 
@@ -76,16 +86,25 @@ class ProductImport implements ToCollection
 
                 // Check if product already exists in database
                 if ($productCode && in_array($productCode, $this->existingProductCodes)) {
-                    // Update only sale price for existing product
+                    // Update product name, box size and sale price for existing product
                     $existingProduct = Product::where('productCode', $productCode)
                         ->where('business_id', $this->businessId)
                         ->first();
                     
                     if ($existingProduct) {
-                        // Update sales price in stock
-                        Stock::where('product_id', $existingProduct->id)
-                            ->where('business_id', $this->businessId)
-                            ->update(['sales_price' => $salePrice]);
+                        // Get or create box size with extracted value
+                        $boxSizeValue = $this->extractNumericValue($boxSize);
+                        $boxSizId = $this->boxSizes[$boxSize] ??= BoxSize::firstOrCreate(
+                            ['name' => $boxSize, 'business_id' => $this->businessId],
+                            ['name' => $boxSize, 'value' => $boxSizeValue]
+                        )->id;
+                        
+                        // Update product name and box size
+                        $existingProduct->update([
+                            'productName' => $productName,
+                            'box_size_id' => $boxSizId, 
+                            'alert_qty' => $alertQty,
+                        ]);
                     }
                     
                     if ($productCode) {
@@ -122,9 +141,10 @@ class ProductImport implements ToCollection
                     ['name' => $manufacturerName]
                 )->id;
 
+                $boxSizeValue = $this->extractNumericValue($boxSize);
                 $boxSizId = $this->boxSizes[$boxSize] ??= BoxSize::firstOrCreate(
                     ['name' => $boxSize, 'business_id' => $this->businessId],
-                    ['name' => $boxSize]
+                    ['name' => $boxSize, 'value' => $boxSizeValue]
                 )->id;
 
                 $unitId = $this->units[$unitName] ??= Unit::firstOrCreate(
@@ -185,7 +205,8 @@ class ProductImport implements ToCollection
                         'mfg_date' => $manufacturingDate,
                     ]
                 );
-            }
+                }
+            });
         });
     }
 
@@ -223,5 +244,21 @@ class ProductImport implements ToCollection
                 }
             }
         }
+    }
+
+    /**
+     * Extract numeric value from box size name
+     * Examples: "5's" -> 5, "10 pieces" -> 10, "100" -> 100
+     */
+    function extractNumericValue($boxSizeName)
+    {
+        if (empty($boxSizeName)) {
+            return null;
+        }
+
+        // Extract first numeric value from the string
+        preg_match('/\d+/', $boxSizeName, $matches);
+        
+        return !empty($matches) ? (int)$matches[0] : null;
     }
 }

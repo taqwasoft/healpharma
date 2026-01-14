@@ -22,7 +22,7 @@
          data-route="{{ route('business.carts.store') }}">
 
         <div class="product-con" style="flex: 1; min-width: 0;">
-            <h6 class="pur-title product_name mb-0" style="font-size: 0.9rem; white-space: normal; overflow: visible;">{{ $product->productName }}</h6>
+            <h6 class="pur-title product_name mb-0" style="font-size: 0.9rem; white-space: normal; overflow: visible;">{{ $product->formatted_name }}</h6>
             {{-- <small class="text-muted" style="font-size: 0.75rem;">{{ __('Stock') }}: {{ $totalStock }}</small> --}}
         </div>
         <div class="price" style="flex-shrink: 0;">
