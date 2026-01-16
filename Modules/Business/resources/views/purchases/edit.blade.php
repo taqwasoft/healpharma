@@ -224,7 +224,7 @@
                                                 @endif
                                             </div>
 
-                                            <button type="button" class="add-payment-btn">+ Add Payment</button>
+                                            {{-- <button type="button" class="add-payment-btn">+ Add Payment</button> --}}
                                         </div>
                                     </div>
 
@@ -238,7 +238,8 @@
                                             <div class='total-amount  w-100' id="total_amount">  {{ currency_format($purchase->totalAmount, 'icon', 2, business_currency()) }}</div>
                                         </div>
                                     </div>
-                                    <div class="row save-amount-container  align-items-center mb-2">
+                                    {{-- Bill-wise Vat commented out - using product-wise VAT only --}}
+                                    {{-- <div class="row save-amount-container  align-items-center mb-2">
                                         <h6 class="payment-title col-6">{{ __('Vat') }}</h6>
                                         <div class="col-6 w-100 d-flex justify-content-between gap-2">
                                             <div class="d-flex d-flex align-items-center gap-2">
@@ -254,13 +255,12 @@
                                                     class="form-control amount-container right-start-input" placeholder="{{ __('0') }}"
                                                     readonly>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="row save-amount-container  align-items-center mb-2">
                                         <h6 class="payment-title col-6">{{ __('Discount') }}</h6>
                                         <div class="col-6 w-100 d-flex justify-content-between gap-2">
                                             <div class="d-flex d-flex align-items-center gap-2">
                                                 <select name="discount_type" class="form-select amount-container discount_type" id='form-ware'>
-                                                    <option value="">Select</option>
                                                     <option value="flat" @selected($purchase->discount_type == 'flat')>{{ __('Flat') }} </option>
                                                     <option value="percent" @selected($purchase->discount_type == 'percent')>{{ __('Percent') }}</option>
                                                 </select>
@@ -271,13 +271,26 @@
                                         </div>
                                     </div>
                                     <div class="row save-amount-container  align-items-center mb-2">
+                                        <h6 class="payment-title col-6">{{ __('Total Discount') }}</h6>
+                                        <div class="col-6 w-100">
+                                            <input type="number" step="any" id="total_discount_display" class="amount-container form-control right-start-input" placeholder="{{ __('0') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row save-amount-container  align-items-center mb-2">
+                                        <h6 class="payment-title col-6 text-muted small">{{ __('Item VAT') }}</h6>
+                                        <div class="col-6 w-100">
+                                            <input type="number" step="any" id="product_wise_vat_display" class="amount-container form-control right-start-input bg-light" placeholder="{{ __('0') }}" readonly title="Sum of product-wise VAT (info only)">
+                                        </div>
+                                    </div>
+                                    {{-- Delivery Cost commented out --}}
+                                    {{-- <div class="row save-amount-container  align-items-center mb-2">
                                         <h6 class="payment-title col-6">{{ __('Delivery Cost') }}</h6>
                                         <div class="col-12">
                                             <input type="number" step="any" name="shipping_charge" id="shipping_charge"
                                                     value="{{ $purchase->shipping_charge }}"
                                                     class="form-control amount-container right-start-input" placeholder="0">
                                         </div>
-                                    </div>
+                                    </div> --}}
 
 
                                 </div>
@@ -337,8 +350,14 @@
 @endpush
 
 @push('js')
+    <script>
+        // Make box sizes available globally with name and value
+        window.allBoxSizes = @json($box_sizes->map(function($item) {
+            return ['name' => $item->name, 'value' => $item->value];
+        })->toArray());
+    </script>
     <script src="{{ asset('assets/js/choices.min.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/purchase.js') }}"></script>
+    <script src="{{ asset('assets/js/custom/purchase.js') }}?v={{ time() }}"></script>
     <script src="{{ asset('assets/js/custom/math.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom/calculator.js') }}"></script>
 @endpush

@@ -39,6 +39,13 @@ class CartController extends Controller
             'id' => 'required|integer',
             'name' => 'required|string',
             'quantity' => 'required|numeric|min:1',
+            'invoice_qty' => 'nullable|numeric|min:0',
+            'bonus_qty' => 'nullable|numeric|min:0',
+            'pack_size' => 'nullable|numeric|min:0',
+            'pack_qty' => 'nullable|numeric|min:0',
+            'gross_total_price' => 'nullable|numeric|min:0',
+            'vat_amount' => 'nullable|numeric|min:0',
+            'discount_amount' => 'nullable|numeric|min:0',
             'price' => 'required|numeric|min:0',
             'product_image' => 'nullable|string',
             'purchase_exclusive_price' => 'nullable|numeric|min:0',
@@ -78,6 +85,14 @@ class CartController extends Controller
                     'stock_id' => $request->stock_id,
                     'purchase_without_tax' => $request->purchase_exclusive_price,
                     'purchase_with_tax' => $request->purchase_inclusive_price,
+                    'invoice_qty' => $request->invoice_qty ?? 0,
+                    'bonus_qty' => $request->bonus_qty ?? 0,
+                    'pack_size' => $request->pack_size ?? null,
+                    'pack_qty' => $request->pack_qty ?? 0,
+                    'gross_total_price' => $request->gross_total_price ?? 0,
+                    'vat_amount' => $request->vat_amount ?? 0,
+                    'discount_amount' => $request->discount_amount ?? 0,
+                    'net_total' => ($request->gross_total_price + $request->vat_amount) - $request->discount_amount,
                     'batch_no' => $request->batch_no ?? null,
                     'expire_date' => $request->expire_date ?? null,
                     'product_unit_name' => $request->product_unit_name ?? null,
@@ -111,7 +126,7 @@ class CartController extends Controller
                     // Update the cart
                     Cart::update($id, [
                         'qty' => $request->qty ?? $cart->qty,
-                        'price' => $request->price ?? $cart->price,
+                        'price' => $request->purchase_inclusive_price ?? $cart->price,
                         'options' => [
                             'type' => $cart->options->type,
                             'stock_id' => $request->stock_id ?? $cart->options->stock_id,
@@ -119,20 +134,26 @@ class CartController extends Controller
                             'expire_date' => $request->expire_date ?? $cart->options->expire_date,
                             'product_unit_name' => $cart->options->product_unit_name,
                             'product_image' => $cart->options->product_image,
-                            'purchase_without_tax' => $cart->options->purchase_exclusive_price,
-                            'purchase_with_tax' => $cart->options->purchase_inclusive_price,
-                            'wholesale_price' => $cart->options->wholesale_price,
-                            'dealer_price' => $cart->options->dealer_price,
-                            'sales_price' => $cart->options->sales_price,
-                            'profit_percent' => $cart->options->profit_percent,
+                            'purchase_without_tax' => $request->purchase_exclusive_price ?? $cart->options->purchase_without_tax ?? 0,
+                            'purchase_with_tax' => $request->purchase_inclusive_price ?? $cart->options->purchase_with_tax ?? 0,
+                            'invoice_qty' => $request->invoice_qty ?? $cart->options->invoice_qty ?? 0,
+                            'bonus_qty' => $request->bonus_qty ?? $cart->options->bonus_qty ?? 0,
+                            'pack_size' => $request->pack_size ?? $cart->options->pack_size ?? null,
+                            'pack_qty' => $request->pack_qty ?? $cart->options->pack_qty ?? 0,
+                            'gross_total_price' => $request->gross_total_price ?? $cart->options->gross_total_price ?? 0,
+                            'vat_amount' => $request->vat_amount ?? $cart->options->vat_amount ?? 0,
+                            'discount_amount' => $request->discount_amount ?? $cart->options->discount_amount ?? 0,
+                            'net_total' => (($request->gross_total_price ?? 0) + ($request->vat_amount ?? 0)) - ($request->discount_amount ?? 0),
+                            'wholesale_price' => $request->wholesale_price ?? $cart->options->wholesale_price ?? 0,
+                            'dealer_price' => $request->dealer_price ?? $cart->options->dealer_price ?? 0,
+                            'sales_price' => $request->sales_price ?? $cart->options->sales_price ?? 0,
+                            'profit_percent' => $request->profit_percent ?? $cart->options->profit_percent ?? 0,
                         ]
                     ]);
 
                     return response()->json([
                         'success' => true,
-                        'message' => __('Quantity') .
-                            ($price !== null ? __(' and price') : '') .
-                            __(' updated successfully')
+                        'message' => __('Cart item updated successfully')
                     ]);
                 } else {
                     return response()->json(['success' => false, 'message' => __('Enter a valid quantity')]);

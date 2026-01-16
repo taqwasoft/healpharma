@@ -527,7 +527,11 @@ $(document).on("submit", ".ajaxform_redirect_invoice", function (e) {
 
                 if (e.is_draft) {
                     clearCart("sale");
+                    clearCart("purchase");
                     $("#receive_amount").val("");
+                    $("#discount_amount").val("");
+                    $("#total_discount_display").val("");
+                    $("#product_wise_vat_display").val("");
                     $(".null_by_reset").val("");
                 }
                 if (e.secondary_redirect_url) {

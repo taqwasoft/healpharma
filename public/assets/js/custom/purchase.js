@@ -37,6 +37,12 @@ function formattedAmount(amount, decimals) {
         : (+amount).toFixed(decimals);
 }
 
+// Format number for display
+function formatNumber(value, decimals = 2) {
+    if (value === null || value === undefined || value === '') return '';
+    return Number.isInteger(+value) ? parseInt(value) : (+value).toFixed(decimals);
+}
+
 // get number only
 function getNumericValue(value) {
     return parseFloat(value.replace(/[^0-9.-]+/g, "")) || 0;
@@ -174,117 +180,219 @@ $(document).on("change", "#category_id", function (e) {
 
 /** Add to cart start **/
 let selectedProduct = {};
+let isEditMode = false;
+let editCartRowId = null;
 
 $(document).on("click", "#single-product", function () {
+    isEditMode = false;
+    editCartRowId = null;
     showProductModal($(this));
 });
 
+// Edit cart item
+$(document).on("click", ".edit-cart-btn", function (e) {
+    e.preventDefault();
+    let $row = $(this).closest("tr");
+    isEditMode = true;
+    editCartRowId = $row.data("row_id");
+    showCartItemInModal($row);
+});
+
+function showCartItemInModal($row) {
+    selectedProduct = {
+        product_id: $row.data("product_id"),
+        product_name: $row.data("product_name"),
+        product_image: $row.data("product_image"),
+        product_box_size: $row.data("product_box_size"),
+    };
+
+    // Set modal display values
+    $("#product_name").text(selectedProduct.product_name);
+    $("#stock").text($row.data("stock") || 0);
+    
+    // Handle pack size dropdown - show all box sizes
+    if (window.allBoxSizes && window.allBoxSizes.length > 0) {
+        $("#pack_row_container").show();
+        
+        let packSizeOptions = '<option value="">Select Box Size</option>';
+        let currentPackSize = $row.data("pack_size") || "";
+        window.allBoxSizes.forEach(function(boxSize) {
+            let selected = (boxSize.value == currentPackSize) ? ' selected' : '';
+            packSizeOptions += `<option value="${boxSize.value}"${selected}>${boxSize.name}</option>`;
+        });
+        $("#pack_size").html(packSizeOptions);
+        $("#pack_qty").val($row.data("pack_qty") || 0);
+    } else {
+        $("#pack_row_container").hide();
+        $("#pack_size").val("");
+        $("#pack_qty").val(0);
+    }
+    
+    // Populate all fields with existing cart data
+    $("#invoice_qty").val($row.data("invoice_qty") || 0);
+    $("#bonus_qty").val($row.data("bonus_qty") || 0);
+    $("#product_qty").val($row.data("product_qty") || 0);
+    $("#gross_total_price").val($row.data("gross_total_price") || 0);
+    $("#vat_amount").val($row.data("vat_amount") || 0);
+    $("#product_discount_amount").val($row.data("discount_amount") || 0);
+    $("#purchase_exclusive_price").val($row.data("purchase_exclusive_price") || 0);
+    $("#purchase_inclusive_price").val($row.data("purchase_inclusive_price") || 0);
+    $("#profit_percent").val($row.data("profit_percent") || 0);
+    $("#sales_price").val($row.data("sales_price") || 0);
+    $("#wholesale_price").val($row.data("wholesale_price") || 0);
+    $("#dealer_price").val($row.data("dealer_price") || 0);
+    $("#batch_no").val($row.data("batch_no") || "");
+    $("#expire_date").val($row.data("expire_date") || "");
+
+    // Trigger calculation to update Net Total display
+    updatePurchasePrices();
+
+    $("#product-modal").modal("show");
+}
+
 function autoOpenModal(id) {
     let element = $("#products-list").find(".single-product." + id);
+    isEditMode = false;
+    editCartRowId = null;
     showProductModal(element);
 }
 
 /** Purchase Modal Calculation Start **/
 
 // Prevent negative input
-$("#purchase_inclusive_price, #profit_percent").on("keydown", function (e) {
+$("#purchase_inclusive_price, #profit_percent, #invoice_qty, #bonus_qty, #gross_total_price, #vat_amount, #product_discount_amount").on("keydown", function (e) {
     if (e.key === "-" || e.keyCode === 189) {
         e.preventDefault();
     }
 });
 
-// function updatePrices() {
-//     let purchaseExclusivePrice =
-//         parseFloat($("#purchase_exclusive_price").val()) || 0;
-//     let profitPercent = parseFloat($("#profit_percent").val()) || 0;
-//
-//     let calculatedSalesPrice =
-//         purchaseExclusivePrice + (purchaseExclusivePrice * profitPercent) / 100;
-//
-//     $("#sales_price").val(formatNumber(calculatedSalesPrice));
-//     $("#wholesale_price").val(formatNumber(calculatedSalesPrice));
-//     $("#dealer_price").val(formatNumber(calculatedSalesPrice));
-// }
+// Calculate invoice_qty from pack_size * pack_qty, then product_qty from invoice_qty + bonus_qty
+function updateInvoiceQtyFromPack() {
+    let packSize = parseFloat($("#pack_size").val()) || 0;
+    let packQty = parseFloat($("#pack_qty").val()) || 0;
+    
+    if (packSize > 0 && packQty > 0) {
+        let invoiceQty = packSize * packQty;
+        $("#invoice_qty").val(invoiceQty);
+    }
+    
+    updateProductQty();
+}
 
-function updatePrices() {
+// Calculate product_qty from invoice_qty + bonus_qty
+function updateProductQty() {
+    let invoiceQty = parseFloat($("#invoice_qty").val()) || 0;
+    let bonusQty = parseFloat($("#bonus_qty").val()) || 0;
+    let productQty = invoiceQty + bonusQty;
+    
+    $("#product_qty").val(productQty);
+    
+    // Recalculate unit price when quantity changes
+    updatePurchasePrices();
+}
+
+// Calculate Net Total and Unit Prices
+function updatePurchasePrices() {
+    // Use modal context to avoid conflicts with main form fields
+    let $modal = $("#product-modal");
+    let grossTotalPrice = parseFloat($modal.find("#gross_total_price").val()) || 0;
+    let vatAmount = parseFloat($modal.find("#vat_amount").val()) || 0;
+    let discountAmount = parseFloat($modal.find("#product_discount_amount").val()) || 0;
+    let productQty = parseFloat($modal.find("#product_qty").val()) || 0;
+    
+    // console.log('updatePurchasePrices called:');
+    // console.log('Gross Total:', grossTotalPrice);
+    // console.log('VAT:', vatAmount);
+    // console.log('Discount:', discountAmount);
+    // console.log('Product Qty:', productQty);
+    
+    // Net Total = (Gross Total + VAT) - Discount
+    let netTotal = (grossTotalPrice + vatAmount) - discountAmount;
+    console.log('Calculated Net Total:', netTotal);
+    
+    // Display Net Total
+    $modal.find("#net_total_display").text(formatNumber(netTotal));
+    console.log('Display updated to:', formatNumber(netTotal));
+    
+    // Unit Price = Net Total / Product Qty
+    let unitPrice = 0;
+    if (productQty > 0) {
+        unitPrice = netTotal / productQty;
+    }
+    console.log('Unit Price:', unitPrice);
+    
+    // Update purchase prices (exclusive = inclusive for now)
+    $modal.find("#purchase_exclusive_price").val(formatNumber(unitPrice));
+    $modal.find("#purchase_inclusive_price").val(formatNumber(unitPrice));
+    
+    // Update profit percent and prices
+    updateProfitPercent();
+}
+
+// Calculate profit percent from purchase price and sale price
+function updateProfitPercent() {
+    let purchaseExclusivePrice = parseFloat($("#purchase_exclusive_price").val()) || 0;
+    let salesPrice = parseFloat($("#sales_price").val()) || 0;
+    
+    let profitPercent = 0;
+    if (purchaseExclusivePrice > 0) {
+        profitPercent = ((salesPrice - purchaseExclusivePrice) / purchaseExclusivePrice) * 100;
+    }
+    
+    $("#profit_percent").val(formatNumber(profitPercent));
+    
+    // Sync wholesale and dealer prices with sales price
+    $("#wholesale_price").val(formatNumber(salesPrice));
+    $("#dealer_price").val(formatNumber(salesPrice));
+}
+
+// Calculate sale price from profit percent
+function updateSalePriceFromProfit() {
     let purchaseExclusivePrice = parseFloat($("#purchase_exclusive_price").val()) || 0;
     let profitPercent = parseFloat($("#profit_percent").val()) || 0;
-
-    // Grab tax info from modal
-    let taxRate = parseFloat($("#product-modal").data("tax_rate")) || 0;
-    let taxType = $("#product-modal").data("tax_type") || "exclusive";
-
-    let inclusivePrice = 0;
-
-    if (taxType === "inclusive") {
-        // Inclusive → exclusive is price / (1 + rate/100)
-        purchaseExclusivePrice = purchaseExclusivePrice / (1 + taxRate / 100);
-        inclusivePrice = purchaseExclusivePrice * (1 + taxRate / 100);
-    } else {
-        // Exclusive → just add tax on top
-        inclusivePrice = purchaseExclusivePrice * (1 + taxRate / 100);
-    }
-
-    // Update input fields
-    $("#purchase_exclusive_price").val(formatNumber(purchaseExclusivePrice));
-    $("#purchase_inclusive_price").val(formatNumber(inclusivePrice));
-
-    // Profit calc always based on exclusive
+    
     let calculatedSalesPrice = purchaseExclusivePrice + (purchaseExclusivePrice * profitPercent) / 100;
-
-    // Don't update sales_price - let user enter it manually
-    // $("#sales_price").val(formatNumber(calculatedSalesPrice));
+    
+    $("#sales_price").val(formatNumber(calculatedSalesPrice));
     $("#wholesale_price").val(formatNumber(calculatedSalesPrice));
     $("#dealer_price").val(formatNumber(calculatedSalesPrice));
 }
 
-// Update prices without reformatting the exclusive price field
-function updatePricesWithoutExclusive() {
-    let purchaseExclusivePrice = parseFloat($("#purchase_exclusive_price").val()) || 0;
-    let profitPercent = parseFloat($("#profit_percent").val()) || 0;
-
-    // Profit calc always based on exclusive
-    let calculatedSalesPrice = purchaseExclusivePrice + (purchaseExclusivePrice * profitPercent) / 100;
-
-    // Don't update sales_price - let user enter it manually
-    // Update wholesale and dealer prices
-    $("#wholesale_price").val(formatNumber(calculatedSalesPrice));
-    $("#dealer_price").val(formatNumber(calculatedSalesPrice));
-}
-
-
-$("#purchase_exclusive_price").on("input", function () {
-    let value = $(this).val();
-    
-    // Allow empty field
-    if (value === '' || value === null) {
-        $("#purchase_inclusive_price").val('');
-        return;
-    }
-    
-    // Just sync the value, don't format the current field
-    let exclusivePrice = parseFloat(value) || 0;
-    $("#purchase_inclusive_price").val(value); // Keep same format
-    updatePricesWithoutExclusive();
+// Event listeners for pack fields
+$("#pack_size, #pack_qty").on("change input", function () {
+    updateInvoiceQtyFromPack();
 });
 
-$("#purchase_inclusive_price").on("input", function () {
-    let value = $(this).val();
-    
-    // Allow empty field
-    if (value === '' || value === null) {
-        $("#purchase_exclusive_price").val('');
-        return;
-    }
-    
-    // Just sync the value, don't format the current field
-    let inclusivePrice = parseFloat(value) || 0;
-    $("#purchase_exclusive_price").val(value); // Keep same format
-    updatePricesWithoutExclusive();
+// Event listeners for quantity fields
+$("#invoice_qty, #bonus_qty").on("input", function () {
+    updateProductQty();
 });
 
+// Event listeners for price calculation fields - scope to modal to avoid ID conflicts
+$("#product-modal").on("input", "#gross_total_price, #vat_amount, #product_discount_amount", function () {
+    updatePurchasePrices();
+});
+
+// Event listener for profit percent
 $("#profit_percent").on("input", function () {
-    updatePricesWithoutExclusive();
+    updateSalePriceFromProfit();
+});
+
+// Event listener for sales price - recalculate profit percent
+$("#sales_price").on("input", function () {
+    let salesPrice = parseFloat($(this).val()) || 0;
+    
+    // Sync wholesale and dealer prices
+    $("#wholesale_price").val(formatNumber(salesPrice));
+    $("#dealer_price").val(formatNumber(salesPrice));
+    
+    // Recalculate profit percent
+    let purchaseExclusivePrice = parseFloat($("#purchase_exclusive_price").val()) || 0;
+    let profitPercent = 0;
+    if (purchaseExclusivePrice > 0) {
+        profitPercent = ((salesPrice - purchaseExclusivePrice) / purchaseExclusivePrice) * 100;
+    }
+    $("#profit_percent").val(formatNumber(profitPercent));
 });
 
 /** Purchase Modal Calculation End **/
@@ -308,11 +416,38 @@ function showProductModal(element) {
         product_unit_name: element.data("product_unit_name"),
         tax_rate: element.data("tax_rate"),
         tax_type: element.data("tax_type"),
+        product_box_size: element.data("product_box_size"),
     };
 
     // Set modal display values
     $("#product_name").text(selectedProduct.product_name);
     $("#stock").text(selectedProduct.stock);
+    
+    // Handle pack size dropdown - show all box sizes
+    if (window.allBoxSizes && window.allBoxSizes.length > 0) {
+        $("#pack_row_container").show();
+        
+        let packSizeOptions = '<option value="">Select Box Size</option>';
+        window.allBoxSizes.forEach(function(boxSize) {
+            let selected = (boxSize.value == selectedProduct.product_box_size) ? ' selected' : '';
+            packSizeOptions += `<option value="${boxSize.value}"${selected}>${boxSize.name}</option>`;
+        });
+        $("#pack_size").html(packSizeOptions);
+        $("#pack_qty").val(0);
+    } else {
+        $("#pack_row_container").hide();
+        $("#pack_size").val("");
+        $("#pack_qty").val(0);
+    }
+    
+    // Initialize new fields with defaults
+    $("#invoice_qty").val(0);
+    $("#bonus_qty").val(0);
+    $("#product_qty").val(0);
+    $("#gross_total_price").val(0);
+    $("#vat_amount").val(0);
+    $("#discount_amount").val(0);
+    
     $("#purchase_exclusive_price").val(
         selectedProduct.purchase_exclusive_price
     );
@@ -321,8 +456,8 @@ function showProductModal(element) {
     );
     $("#profit_percent").val(selectedProduct.profit_percent);
     $("#sales_price").val(selectedProduct.sales_price);
-    $("#wholesale_price").val(selectedProduct.wholesale_price);
-    $("#dealer_price").val(selectedProduct.dealer_price);
+    $("#wholesale_price").val(selectedProduct.sales_price);
+    $("#dealer_price").val(selectedProduct.sales_price);
     $("#batch_no").val(selectedProduct.batch_no);
     $("#expire_date").val(selectedProduct.expire_date);
     $("#product-modal").data("tax_rate", selectedProduct.tax_rate);
@@ -344,57 +479,138 @@ $purchase_modal_reload.initFormValidation(),
         e.preventDefault();
         let t = $(this).find(".submit-btn"),
             a = t.html();
-        let url = $(this).data("route");
+        
         let quantity = parseFloat($("#product_qty").val());
-        $purchase_modal_reload.valid() &&
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: {
-                type: "purchase",
-                id: selectedProduct.product_id,
-                name: selectedProduct.product_name,
-                product_image: selectedProduct.product_image,
-                product_unit_name: selectedProduct.product_unit_name,
-                quantity: quantity,
-                price: parseFloat($("#purchase_inclusive_price").val()),
-                purchase_exclusive_price: parseFloat(
-                    $("#purchase_exclusive_price").val()
-                ),
-                purchase_inclusive_price: parseFloat(
-                    $("#purchase_inclusive_price").val()
-                ),
-                profit_percent: parseFloat($("#profit_percent").val()),
-                sales_price: parseFloat($("#sales_price").val()) || 0,
-                wholesale_price:
-                    parseFloat($("#wholesale_price").val()) || 0,
-                dealer_price: parseFloat($("#dealer_price").val()),
-                batch_no: $("#batch_no").val(),
-                expire_date: $("#expire_date").val(),
-            },
-            beforeSend: function () {
-                t.html(savingLoader).attr("disabled", !0);
-            },
-            success: function (response) {
-                t.html(a).removeClass("disabled").attr("disabled", !1);
+        let invoiceQty = parseFloat($("#invoice_qty").val()) || 0;
+        let bonusQty = parseFloat($("#bonus_qty").val()) || 0;
+        let grossTotalPrice = parseFloat($("#gross_total_price").val()) || 0;
+        let vatAmount = parseFloat($("#vat_amount").val()) || 0;
+        let discountAmount = parseFloat($("#product_discount_amount").val()) || 0;
+        
+        if (!$purchase_modal_reload.valid()) return;
+        
+        // Edit mode - update existing cart item
+        if (isEditMode && editCartRowId) {
+            let $row = $('tr[data-row_id="' + editCartRowId + '"]');
+            let updateUrl = $row.data("update_route");
+            
+            $.ajax({
+                url: updateUrl,
+                type: "PUT",
+                data: {
+                    rowId: editCartRowId,
+                    qty: quantity,
+                    invoice_qty: invoiceQty,
+                    bonus_qty: bonusQty,
+                    pack_size: parseFloat($("#pack_size").val()) || null,
+                    pack_qty: parseFloat($("#pack_qty").val()) || 0,
+                    gross_total_price: grossTotalPrice,
+                    vat_amount: vatAmount,
+                    discount_amount: discountAmount,
+                    purchase_exclusive_price: parseFloat($("#purchase_exclusive_price").val()),
+                    purchase_inclusive_price: parseFloat($("#purchase_inclusive_price").val()),
+                    profit_percent: parseFloat($("#profit_percent").val()),
+                    sales_price: parseFloat($("#sales_price").val()) || 0,
+                    wholesale_price: parseFloat($("#wholesale_price").val()) || 0,
+                    dealer_price: parseFloat($("#dealer_price").val()) || 0,
+                    batch_no: $("#batch_no").val(),
+                    expire_date: $("#expire_date").val(),
+                },
+                beforeSend: function () {
+                    t.html(savingLoader).attr("disabled", !0);
+                },
+                success: function (response) {
+                    t.html(a).removeClass("disabled").attr("disabled", !1);
+                    if (response.success) {
+                        toastr.success("Cart item updated successfully!");
+                        fetchUpdatedCart(calTotalAmount);
+                        $("#product-modal").modal("hide");
+                        resetModalForm();
+                    } else {
+                        toastr.error(response.message || "Failed to update cart item.");
+                    }
+                },
+                error: function (xhr) {
+                    t.html(a).removeClass("disabled").attr("disabled", !1);
+                    toastr.error("An error occurred while updating cart item.");
+                },
+            });
+        } else {
+            // Add mode - add new item to cart
+            let url = $(this).data("route");
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: {
+                    type: "purchase",
+                    id: selectedProduct.product_id,
+                    name: selectedProduct.product_name,
+                    product_image: selectedProduct.product_image,
+                    product_unit_name: selectedProduct.product_unit_name,
+                    quantity: quantity,
+                    invoice_qty: invoiceQty,
+                    bonus_qty: bonusQty,
+                    pack_size: parseFloat($("#pack_size").val()) || null,
+                    pack_qty: parseFloat($("#pack_qty").val()) || 0,
+                    gross_total_price: grossTotalPrice,
+                    vat_amount: vatAmount,
+                    discount_amount: discountAmount,
+                    price: parseFloat($("#purchase_inclusive_price").val()),
+                    purchase_exclusive_price: parseFloat(
+                        $("#purchase_exclusive_price").val()
+                    ),
+                    purchase_inclusive_price: parseFloat(
+                        $("#purchase_inclusive_price").val()
+                    ),
+                    profit_percent: parseFloat($("#profit_percent").val()),
+                    sales_price: parseFloat($("#sales_price").val()) || 0,
+                    wholesale_price:
+                        parseFloat($("#wholesale_price").val()) || 0,
+                    dealer_price: parseFloat($("#dealer_price").val()),
+                    batch_no: $("#batch_no").val(),
+                    expire_date: $("#expire_date").val(),
+                },
+                beforeSend: function () {
+                    t.html(savingLoader).attr("disabled", !0);
+                },
+                success: function (response) {
+                    t.html(a).removeClass("disabled").attr("disabled", !1);
 
-                if (response.success) {
-                    fetchUpdatedCart(calTotalAmount); // Update totals after cart fetch completes
-                    $("#product-modal").modal("hide");
-                    $("#product_qty").val("");
-                } else {
+                    if (response.success) {
+                        fetchUpdatedCart(calTotalAmount);
+                        $("#product-modal").modal("hide");
+                        resetModalForm();
+                    } else {
+                        toastr.error(
+                            response.message || "Failed to add product to cart."
+                        );
+                    }
+                },
+                error: function (xhr) {
+                    t.html(a).removeClass("disabled").attr("disabled", !1);
                     toastr.error(
-                        response.message || "Failed to add product to cart."
+                        "An error occurred while adding product to cart."
                     );
-                }
-            },
-            error: function (xhr) {
-                toastr.error(
-                    "An error occurred while adding product to cart."
-                );
-            },
-        });
+                },
+            });
+        }
     });
+
+// Reset modal form
+function resetModalForm() {
+    isEditMode = false;
+    editCartRowId = null;
+    $("#product_qty").val("");
+    $("#invoice_qty").val(0);
+    $("#bonus_qty").val(0);
+    $("#pack_size").val("");
+    $("#pack_qty").val(0);
+    $("#pack_row_container").hide();
+    $("#gross_total_price").val(0);
+    $("#vat_amount").val(0);
+    $("#product_discount_amount").val(0);
+    $("#net_total_display").text("0");
+}
 
 /** Add to cart End **/
 
@@ -406,17 +622,6 @@ $("#discount_amount, #receive_amount, #shipping_charge").on(
     }
 );
 
-// tax calculation
-$(".tax_select").on("change", function () {
-    let taxRate = parseFloat($(this).find(":selected").data("rate")) || 0;
-    let subtotal = getNumericValue($("#sub_total").text()) || 0;
-
-    let taxAmount = (subtotal * taxRate) / 100;
-
-    $("#tax_amount").val(taxAmount.toFixed(2));
-    calTotalAmount();
-});
-
 // discount calculation
 $(".discount_type").on("change", function () {
     calTotalAmount();
@@ -425,49 +630,63 @@ $(".discount_type").on("change", function () {
 // Function to calculate the total amount
 function calTotalAmount() {
     let subtotal = 0;
+    let productWiseVat = 0;
+    let productWiseDiscount = 0;
 
-    // Calculate subtotal from cart list
-    $("#purchase_cart_list tr").each(function () {
-        let cart_subtotal = getNumericValue($(this).find(".cart-subtotal").text()) || 0;
+    // Calculate subtotal and product-wise vat/discount from cart list
+    // NOTE: The subtotal already includes product-wise VAT/Discount effects
+    // because Unit Price = (Gross Total + VAT - Discount) / Qty
+    $("#purchase_cart_list tr.product-cart-tr").each(function () {
+        let $row = $(this);
+        let cart_subtotal = getNumericValue($row.find(".cart-subtotal").text()) || 0;
+        
+        // Read product-wise VAT and Discount for display purposes only
+        let vat = parseFloat($row.attr("data-vat_amount")) || 0;
+        let discount = parseFloat($row.attr("data-discount_amount")) || 0;
+        
         subtotal += cart_subtotal;
+        productWiseVat += vat;
+        productWiseDiscount += discount;
     });
 
     $("#sub_total").text(currencyFormat(subtotal));
+    
+    // Display product-wise VAT (for information only)
+    $("#product_wise_vat_display").val(productWiseVat.toFixed(2));
 
-    // Vat
-    let tax_rate =
-        parseFloat($(".tax_select option:selected").data("rate")) || 0;
-    let tax_amount = (subtotal * tax_rate) / 100;
-    $("#tax_amount").val(tax_amount.toFixed(2));
+    // Bill-wise Discount calculation
+    let bill_discount_input = getNumericValue($("#discount_amount").val()) || 0;
+    let discount_type = $(".discount_type").val();
+    let bill_discount_amount = 0;
 
-    // Discount
-    let discount_amount = getNumericValue($("#discount_amount").val()) || 0;
-    let discount_type = $(".discount_type").val(); // Get the selected discount type
+    // Only validate discount if there are items in cart (subtotal > 0)
+    if (subtotal > 0) {
+        if (discount_type == "percent") {
+            bill_discount_amount = (subtotal * bill_discount_input) / 100;
 
-
-    if (discount_type == "percent") {
-        discount_amount = (subtotal * discount_amount) / 100;
-
-        // Ensure percentage discount does not exceed 100%
-        if (discount_amount > subtotal) {
-            toastr.error("Discount cannot be more than 100% of the subtotal!");
-            discount_amount = subtotal; // Cap discount at subtotal
-            $("#discount_amount").val(100); // Reset input field to max 100%
-        }
-    } else {
-        if (discount_amount > subtotal) {
-            toastr.error("Discount cannot be more than the subtotal!");
-            discount_amount = subtotal;
-            $("#discount_amount").val(discount_amount);
+            // Ensure percentage discount does not exceed 100%
+            if (bill_discount_amount > subtotal) {
+                toastr.error("Discount cannot be more than 100% of the subtotal!");
+                bill_discount_amount = subtotal;
+                $("#discount_amount").val(100);
+            }
+        } else {
+            bill_discount_amount = bill_discount_input;
+            if (bill_discount_amount > subtotal) {
+                toastr.error("Discount cannot be more than the subtotal!");
+                bill_discount_amount = subtotal;
+                $("#discount_amount").val(bill_discount_amount);
+            }
         }
     }
 
-    //Shipping Charge
-    let shipping_charge = getNumericValue($("#shipping_charge").val()) || 0;
+    // Display total discount (product-wise + bill-wise) for information
+    let total_discount_display = productWiseDiscount + bill_discount_amount;
+    $("#total_discount_display").val(total_discount_display.toFixed(2));
 
-    // Total Amount
-    let total_amount =
-        subtotal + tax_amount + shipping_charge - discount_amount;
+    // Total Amount = Subtotal - Bill Discount
+    // (No bill-wise VAT, no shipping charge)
+    let total_amount = subtotal - bill_discount_amount;
     $("#total_amount").text(currencyFormat(total_amount));
 
     // Receive Amount
@@ -496,6 +715,9 @@ $(".cancel-sale-btn").on("click", function (e) {
     e.preventDefault();
     clearCart("purchase");
     $("#receive_amount").val("");
+    $("#discount_amount").val("");
+    $("#total_discount_display").val("");
+    $("#product_wise_vat_display").val("");
     $(".null_by_reset").val("");
 });
 
@@ -529,6 +751,7 @@ function fetchProducts() {
 
 $("#product-modal").on("hidden.bs.modal", function () {
     isModalAutoOpened = false;
+    resetModalForm();
 });
 
 document.addEventListener("DOMContentLoaded", function () {

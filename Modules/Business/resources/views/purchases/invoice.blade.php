@@ -60,7 +60,12 @@
             @endphp
             <tr>
                 <td class="text-center invoice-sl">{{ $loop->iteration }}</td>
-                <td>{{ $detail->product->formatted_name ?? $detail->product->productName ?? '' }}</td>
+                <td>
+                    {{ $detail->product->formatted_name ?? $detail->product->productName ?? '' }}
+                    @if($detail->pack_size || $detail->pack_qty)
+                        <br><small style="color: #666;">Pack Size: {{ $detail->pack_size ?? 'N/A' }}, Pack Qty: {{ $detail->pack_qty ?? 'N/A' }}</small>
+                    @endif
+                </td>
                 <td class="text-center">{{ $detail->quantities ?? '' }}</td>
                 <td class="text-center"> {{ currency_format($detail->purchase_with_tax ?? 0, 'icon', 2, business_currency()) }}</td>
                 <td class="text-end">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>
@@ -194,7 +199,12 @@
             @endphp
             <tr>
                 <td class="text-center invoice-sl">{{ $loop->iteration }}</td>
-                <td>{{ $detail->product->formatted_name ?? $detail->product->productName ?? '' }}</td>
+                <td>
+                    {{ $detail->product->formatted_name ?? $detail->product->productName ?? '' }}
+                    @if($detail->pack_size || $detail->pack_qty)
+                        <br><small style="color: #666;">Pack Size: {{ $detail->pack_size ?? 'N/A' }}, Pack Qty: {{ $detail->pack_qty ?? 'N/A' }}</small>
+                    @endif
+                </td>
                 <td class="text-center">{{ $detail->quantities ?? '' }}</td>
                 <td class="text-center"> {{ currency_format($detail->purchase_with_tax ?? 0, 'icon', 2, business_currency()) }}</td>
                 <td class="text-end">{{ currency_format($productTotal, 'icon', 2, business_currency()) }}</td>

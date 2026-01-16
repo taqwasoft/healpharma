@@ -2,6 +2,8 @@
     @php
         $firstStock = $product->all_stocks->first();
         $totalStock = $product->stocks_sum_product_stock ?? 0;
+        // Pass product's box size value if exists
+        $productBoxSizeValue = $product->box_size ? $product->box_size->value : null;
     @endphp
     <div id="single-product" class="single-product {{ $product->id }} d-flex align-items-center justify-content-between gap-3 p-2"
          data-product_id="{{ $product->id }}"
@@ -19,6 +21,7 @@
          data-expire_date="{{ $firstStock->expire_date ?? null  }}"
          data-tax_rate="{{ $product->tax->rate ?? 0 }}"
          data-tax_type="{{ $product->tax_type ?? 'exclusive' }}"
+         data-product_box_size="{{ $productBoxSizeValue }}"
          data-route="{{ route('business.carts.store') }}">
 
         <div class="product-con" style="flex: 1; min-width: 0;">

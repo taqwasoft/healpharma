@@ -4,6 +4,7 @@ namespace Modules\Business\App\Http\Controllers;
 
 use App\Helpers\HasUploader;
 use App\Imports\PurchaseProductImport;
+use App\Models\BoxSize;
 use App\Models\Manufacturer;
 use App\Models\PaymentType;
 use App\Models\Stock;
@@ -61,7 +62,7 @@ class AcnooPurchaseController extends Controller
             ->get();
 
         // Load only top 50 products initially - rest will load via AJAX search
-        $products = Product::with('category:id,categoryName', 'unit:id,unitName', 'stocks:id,product_id,batch_no,expire_date,purchase_with_tax,purchase_without_tax,profit_percent,sales_price,wholesale_price,dealer_price')
+        $products = Product::with('category:id,categoryName', 'unit:id,unitName', 'box_size:id,name,value', 'stocks:id,product_id,batch_no,expire_date,purchase_with_tax,purchase_without_tax,profit_percent,sales_price,wholesale_price,dealer_price')
             ->where('business_id', $business_id)
             ->withSum('stocks', 'productStock')
             ->latest()
@@ -73,11 +74,12 @@ class AcnooPurchaseController extends Controller
         $manufacturers = Manufacturer::where('business_id', $business_id)->latest()->get();
         $taxes = Tax::where('business_id', $business_id)->whereStatus(1)->latest()->get();
         $payment_types = PaymentType::where('business_id', $business_id)->whereStatus(1)->latest()->get();
+        $box_sizes = BoxSize::where('business_id', $business_id)->latest()->get();
 
         // Generate a unique invoice number
         $invoice_no = Purchase::where('business_id', $business_id)->count() + 1;
 
-        return view('business::purchases.create', compact('suppliers', 'products', 'cart_contents', 'invoice_no', 'categories', 'manufacturers', 'taxes', 'payment_types'));
+        return view('business::purchases.create', compact('suppliers', 'products', 'cart_contents', 'invoice_no', 'categories', 'manufacturers', 'taxes', 'payment_types', 'box_sizes'));
     }
 
     public function store(Request $request)
@@ -234,6 +236,14 @@ class AcnooPurchaseController extends Controller
                     'product_id' => $cartItem->id,
                     'batch_no' => $batch_no,
                     'quantities' => $cartItem->qty ?? 0,
+                    'invoice_qty' => $cartItem->options['invoice_qty'] ?? 0,
+                    'bonus_qty' => $cartItem->options['bonus_qty'] ?? 0,
+                    'pack_size' => $cartItem->options['pack_size'] ?? null,
+                    'pack_qty' => $cartItem->options['pack_qty'] ?? 0,
+                    'gross_total_price' => $cartItem->options['gross_total_price'] ?? 0,
+                    'vat_amount' => $cartItem->options['vat_amount'] ?? 0,
+                    'discount_amount' => $cartItem->options['discount_amount'] ?? 0,
+                    'net_total' => $cartItem->options['net_total'] ?? 0,
                     'sales_price' => $cartItem->options['sales_price'] ?? 0,
                     'dealer_price' => $cartItem->options['dealer_price'] ?? 0,
                     'purchase_with_tax' => $cartItem->options['purchase_without_tax'] ?? 0,
@@ -299,25 +309,38 @@ class AcnooPurchaseController extends Controller
         $categories = Category::where('business_id', auth()->user()->business_id)->latest()->get();
         $taxes = Tax::where('business_id', auth()->user()->business_id)->whereStatus(1)->latest()->get();
         $payment_types = PaymentType::where('business_id', auth()->user()->business_id)->whereStatus(1)->latest()->get();
+        $box_sizes = BoxSize::where('business_id', auth()->user()->business_id)->latest()->get();
 
         // Add purchase details to the cart
         foreach ($purchase->details as $detail) {
+            // Get current stock for this product
+            $currentStock = $detail->product->stocks->sum('productStock') ?? 0;
+            
             // Add to cart
             Cart::add([
                 'id' => $detail->product_id,
-                'name' => $detail->product->productName ?? '',
+                'name' => $detail->product->formatted_name ?? $detail->product->productName ?? '',
                 'qty' => $detail->quantities,
                 'price' => $detail->purchase_with_tax,
                 'options' => [
                     'type' => 'purchase',
+                    'stock' => $currentStock,
                     'purchase_without_tax' => $detail->purchase_without_tax,
                     'purchase_with_tax' => $detail->purchase_with_tax,
+                    'invoice_qty' => $detail->invoice_qty ?? 0,
+                    'bonus_qty' => $detail->bonus_qty ?? 0,
+                    'pack_size' => $detail->pack_size ?? null,
+                    'pack_qty' => $detail->pack_qty ?? 0,
+                    'gross_total_price' => $detail->gross_total_price ?? 0,
+                    'vat_amount' => $detail->vat_amount ?? 0,
+                    'discount_amount' => $detail->discount_amount ?? 0,
+                    'net_total' => $detail->net_total ?? 0,
                     'batch_no' => $detail->batch_no,
                     'expire_date' => $detail->expire_date,
                     'wholesale_price' => $detail->wholesale_price,
                     'dealer_price' => $detail->dealer_price,
                     'sales_price' => $detail->sales_price,
-                    'profit_percent' => $detail->product->profit_percent,
+                    'profit_percent' => $detail->profit_percent ?? 0,
                     'product_unit_name' => $detail->product->unit->unitName ?? '',
                     'product_image' => $detail->product->images[0] ?? null,
                 ],
@@ -326,7 +349,7 @@ class AcnooPurchaseController extends Controller
 
         $cart_contents = Cart::content()->filter(fn($item) => $item->options->type == 'purchase');
 
-        return view('business::purchases.edit', compact('purchase', 'suppliers', 'products', 'cart_contents', 'categories', 'taxes', 'payment_types'));
+        return view('business::purchases.edit', compact('purchase', 'suppliers', 'products', 'cart_contents', 'categories', 'taxes', 'payment_types', 'box_sizes'));
     }
 
     public function update(Request $request, $id)
@@ -453,6 +476,12 @@ class AcnooPurchaseController extends Controller
                     'product_id' => $cartItem->id,
                     'batch_no' => $batch_no,
                     'quantities' => $cartItem->qty ?? 0,
+                    'invoice_qty' => $cartItem->options['invoice_qty'] ?? 0,
+                    'bonus_qty' => $cartItem->options['bonus_qty'] ?? 0,
+                    'gross_total_price' => $cartItem->options['gross_total_price'] ?? 0,
+                    'vat_amount' => $cartItem->options['vat_amount'] ?? 0,
+                    'discount_amount' => $cartItem->options['discount_amount'] ?? 0,
+                    'net_total' => $cartItem->options['net_total'] ?? 0,
                     'sales_price' => $cartItem->options['sales_price'] ?? 0,
                     'dealer_price' => $cartItem->options['dealer_price'] ?? 0,
                     'purchase_with_tax' => $cartItem->options['purchase_without_tax'] ?? 0,
