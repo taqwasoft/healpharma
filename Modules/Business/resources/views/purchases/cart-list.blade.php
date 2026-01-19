@@ -63,9 +63,10 @@
         </td>
         <td class="cart-subtotal sales-purchase-td">{{ currency_format($cart->subtotal, 'icon', 2, business_currency()) }}</td>
         <td class="sales-purchase-td">
-            <button class='edit-cart-btn' style="border: none; background: none; cursor: pointer; margin-right: 10px;" title="Edit">
+            {{-- TODO Item Edit Stop Now --}}
+            {{-- <button class='edit-cart-btn' style="border: none; background: none; cursor: pointer; margin-right: 10px;" title="Edit">
                 <i class="fas fa-edit" style="color: #4CAF50; font-size: 18px;"></i>
-            </button>
+            </button> --}}
             <button class='x-btn remove-btn'>
                 <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18.5 6L6.5 18" stroke="#E13F3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
