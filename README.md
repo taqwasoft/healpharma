@@ -74,7 +74,7 @@ pass : password -->
 <!-- https://laravel.com/docs/12.x/scout -->
 
 <!-- Method 3: Task Scheduler (Advanced – Optional)
-
+bdgzHxe4-0yz---000
 Use this if Startup folder is blocked by policy.
 
 Press Win + S → search Task Scheduler
@@ -91,6 +91,7 @@ Program:
 
 C:\xampp\xampp-control.exe
 
+http://cursorwork.com/
 
 Finish ✅ -->
 
