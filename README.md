@@ -66,5 +66,44 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 ## Authenticate
 
-email : admin@gmail.com <br>
-pass : password
+<!-- email : admin@gmail.com <br>
+pass : password -->
+
+<!-- https://github.com/taqwasoft/healpharma -->
+<!-- php artisan scout:import "App\Models\Product" -->
+<!-- https://laravel.com/docs/12.x/scout -->
+
+<!-- Method 3: Task Scheduler (Advanced – Optional)
+
+Use this if Startup folder is blocked by policy.
+
+Press Win + S → search Task Scheduler
+
+Click Create Basic Task
+
+Name: XAMPP Auto Start
+
+Trigger: When I log on
+
+Action: Start a program
+
+Program:
+
+C:\xampp\xampp-control.exe
+
+
+Finish ✅ -->
+
+
+
+<!-- Steps:
+Auto start XAMPP
+Open XAMPP Control Panel as Administrator
+
+Click Config (top right)
+
+Check:
+
+✅ Apache
+
+✅ MySQL -->
