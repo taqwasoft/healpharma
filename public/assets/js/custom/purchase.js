@@ -37,6 +37,111 @@ function formattedAmount(amount, decimals) {
         : (+amount).toFixed(decimals);
 }
 
+// Local storage helpers for purchase cart persistence
+const PURCHASE_CART_CACHE_KEY = "purchase_cart_cache";
+
+// Restore cart from cache on load
+$(document).ready(function () {
+    restoreCartFromCache();
+});
+
+function saveCartCache() {
+    const items = [];
+    $("#purchase_cart_list tr.product-cart-tr").each(function () {
+        const $row = $(this);
+        items.push({
+            product_id: $row.data("product_id"),
+            name: $row.data("product_name"),
+            product_image: $row.data("product_image"),
+            product_unit_name: $row.data("product_unit_name") || "",
+            quantity:
+                parseFloat($row.data("product_qty")) ||
+                parseFloat($row.find(".cart-qty").val()) ||
+                0,
+            invoice_qty: parseFloat($row.data("invoice_qty")) || 0,
+            bonus_qty: parseFloat($row.data("bonus_qty")) || 0,
+            pack_size: $row.data("pack_size") || null,
+            pack_qty: parseFloat($row.data("pack_qty")) || 0,
+            gross_total_price: parseFloat($row.data("gross_total_price")) || 0,
+            vat_amount: parseFloat($row.data("vat_amount")) || 0,
+            discount_amount: parseFloat($row.data("discount_amount")) || 0,
+            purchase_exclusive_price:
+                parseFloat($row.data("purchase_exclusive_price")) || 0,
+            purchase_inclusive_price:
+                parseFloat($row.data("purchase_inclusive_price")) || 0,
+            profit_percent: parseFloat($row.data("profit_percent")) || 0,
+            sales_price: parseFloat($row.data("sales_price")) || 0,
+            wholesale_price: parseFloat($row.data("wholesale_price")) || 0,
+            dealer_price: parseFloat($row.data("dealer_price")) || 0,
+            batch_no: $row.data("batch_no") || "",
+            expire_date: $row.data("expire_date") || "",
+        });
+    });
+
+    localStorage.setItem(PURCHASE_CART_CACHE_KEY, JSON.stringify(items));
+}
+
+function clearCartCache() {
+    localStorage.removeItem(PURCHASE_CART_CACHE_KEY);
+}
+
+function afterCartUpdate() {
+    calTotalAmount();
+    saveCartCache();
+}
+
+async function restoreCartFromCache() {
+    try {
+        const cached = localStorage.getItem(PURCHASE_CART_CACHE_KEY);
+        if (!cached) return;
+
+        const items = JSON.parse(cached) || [];
+        if (!items.length) return;
+
+        // If server already has cart items, don't rehydrate
+        if ($("#purchase_cart_list tr.product-cart-tr").length > 0) return;
+
+        const addUrl = $("#purchase_modal").data("route");
+        if (!addUrl) return;
+
+        for (const item of items) {
+            await $.ajax({
+                url: addUrl,
+                type: "POST",
+                data: {
+                    type: "purchase",
+                    id: item.product_id,
+                    name: item.name,
+                    product_image: item.product_image,
+                    product_unit_name: item.product_unit_name || "",
+                    quantity: item.quantity,
+                    invoice_qty: item.invoice_qty,
+                    bonus_qty: item.bonus_qty,
+                    pack_size: item.pack_size,
+                    pack_qty: item.pack_qty,
+                    gross_total_price: item.gross_total_price,
+                    vat_amount: item.vat_amount,
+                    discount_amount: item.discount_amount,
+                    price: item.purchase_inclusive_price,
+                    purchase_exclusive_price: item.purchase_exclusive_price,
+                    purchase_inclusive_price: item.purchase_inclusive_price,
+                    profit_percent: item.profit_percent,
+                    sales_price: item.sales_price,
+                    wholesale_price: item.wholesale_price,
+                    dealer_price: item.dealer_price,
+                    batch_no: item.batch_no,
+                    expire_date: item.expire_date,
+                },
+            });
+        }
+
+        // Refresh UI and recalc totals
+        fetchUpdatedCart(afterCartUpdate);
+    } catch (error) {
+        console.error("Failed to restore purchase cart from cache", error);
+    }
+}
+
 // Format number for display
 function formatNumber(value, decimals = 2) {
     if (value === null || value === undefined || value === '') return '';
@@ -57,6 +162,7 @@ function fetchUpdatedCart(callback) {
         success: function (response) {
             $("#purchase_cart_list").html(response);
             if (typeof callback === "function") callback(); // Call the callback after updating the cart
+            saveCartCache();
         },
     });
 }
@@ -121,7 +227,7 @@ $(document).on("click", ".remove-btn", function (e) {
                     $(this).remove();
                 });
                 // Recalculate and update cart totals
-                fetchUpdatedCart(calTotalAmount);
+                fetchUpdatedCart(afterCartUpdate);
             } else {
                 toastr.error(response.message || "Failed to remove item");
             }
@@ -143,7 +249,7 @@ function updateCartQuantity(rowId, newQty, updateRoute) {
         },
         success: function (response) {
             if (response.success) {
-                fetchUpdatedCart(calTotalAmount); // Re-fetch the cart and recalculate the total amount
+                fetchUpdatedCart(afterCartUpdate); // Re-fetch the cart and recalculate the total amount
             } else {
                 toastr.error(response.message || "Failed to update quantity");
             }
@@ -165,7 +271,8 @@ function clearCart(cartType) {
         },
         dataType: "json",
         success: function (response) {
-            fetchUpdatedCart(calTotalAmount); // Call calTotalAmount after cart fetch completes
+            fetchUpdatedCart(afterCartUpdate); // Call calTotalAmount after cart fetch completes
+            clearCartCache();
         },
         error: function () {
             console.error("There was an issue clearing the cart.");
@@ -523,7 +630,7 @@ $purchase_modal_reload.initFormValidation(),
                     t.html(a).removeClass("disabled").attr("disabled", !1);
                     if (response.success) {
                         toastr.success("Cart item updated successfully!");
-                        fetchUpdatedCart(calTotalAmount);
+                        fetchUpdatedCart(afterCartUpdate);
                         $("#product-modal").modal("hide");
                         resetModalForm();
                     } else {
@@ -577,7 +684,7 @@ $purchase_modal_reload.initFormValidation(),
                     t.html(a).removeClass("disabled").attr("disabled", !1);
 
                     if (response.success) {
-                        fetchUpdatedCart(calTotalAmount);
+                        fetchUpdatedCart(afterCartUpdate);
                         $("#product-modal").modal("hide");
                         resetModalForm();
                     } else {

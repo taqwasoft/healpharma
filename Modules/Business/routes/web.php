@@ -247,4 +247,8 @@ Route::group(['as' => 'business.', 'prefix' => 'business', 'middleware' => ['use
         Route::get('/{id}', 'mtView')->name('mtView');
         Route::get('view/all/', 'mtReadAll')->name('mtReadAll');
     });
+
+    // Database Backup Routes
+    Route::get('backup', [Business\DatabaseBackupController::class, 'index'])->name('backup.index');
+    Route::post('backup/download', [Business\DatabaseBackupController::class, 'download'])->name('backup.download');
 });

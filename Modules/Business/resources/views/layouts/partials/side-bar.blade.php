@@ -259,7 +259,7 @@
                 </li>
             @endif
 
-            @if (auth()->user()->role != 'staff')
+            {{-- @if (auth()->user()->role != 'staff')
             <li class="{{ Request::routeIs('business.taxes.index', 'business.taxes.create', 'business.taxes.edit') ? 'active' : '' }}">
                 <a href="{{ route('business.taxes.index') }}" class="active">
                     <span class="sidebar-icon">
@@ -272,7 +272,7 @@
                     {{ __('Tax') }}
                 </a>
             </li>
-            @endif
+            @endif --}}
 
             @if (auth()->user()->role != 'staff' || visible_permission('dueListPermission'))
                 <li
@@ -411,6 +411,17 @@
                             </svg>
                         </span>
                         {{ __('Settings') }}
+                    </a>
+                </li>
+                <li class="{{ Request::routeIs('business.backup.index') ? 'active' : '' }}">
+                    <a href="{{ route('business.backup.index') }}">
+                        <span class="sidebar-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.16602 14.1667V15.8334C4.16602 16.2754 4.34161 16.6993 4.65417 17.0119C4.96673 17.3244 5.39065 17.5 5.83268 17.5H14.166C14.608 17.5 15.032 17.3244 15.3445 17.0119C15.6571 16.6993 15.8327 16.2754 15.8327 15.8334V14.1667" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 12.5V2.5M10 12.5L7.5 10M10 12.5L12.5 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        {{ __('Backup') }}
                     </a>
                 </li>
             @endif
