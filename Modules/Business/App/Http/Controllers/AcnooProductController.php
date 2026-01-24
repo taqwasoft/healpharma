@@ -38,36 +38,60 @@ class AcnooProductController extends Controller
         $products = $query->latest()->paginate(10);
         return view('business::products.index', compact('products'));
     }
+    public function acnooFilterNew(Request $request)
+{
+    $search = $request->input('search');
+    $businessId = auth()->user()->business_id;
 
+    if ($search) {
+        // Use Scout for search
+        $products = Product::search($search)
+            ->where('business_id', $businessId)
+            ->query(function ($query) {
+                $query->with(['unit:id,unitName', 'category:id,categoryName', 'stocks'])
+                    ->latest();
+            })
+            ->paginate($request->per_page ?? 10);
+    } else {
+        // Regular query when no search
+        $products = Product::with(['unit:id,unitName', 'category:id,categoryName', 'stocks'])
+            ->where('business_id', $businessId)
+            ->latest()
+            ->paginate($request->per_page ?? 10);
+    }
+
+    if ($request->ajax()) {
+        return response()->json([
+            'data' => view('business::products.datas', compact('products'))->render()
+        ]);
+    }
+
+    return redirect(url()->previous());
+}
     public function acnooFilter(Request $request)
     {
         $search = $request->input('search');
 
-        $products = Product::with(['unit:id,unitName', 'category:id,categoryName', 'stocks',])
-            ->where('business_id', auth()->user()->business_id)
-            ->when($search, function ($q) use ($search) {
-                $q->where(function ($q) use ($search) {
-                    $q->where('productName', 'like', '%' . $search . '%')
-                        ->orWhere('productCode', 'like', '%' . $search . '%')
-                        ->orWhereHas('stocks', function ($q) use ($search) {
-                            $q->where('sales_price', 'like', '%' . $search . '%')
-                                ->orWhere('productStock', 'like', '%' . $search . '%')
-                                ->orWhere('dealer_price', 'like', '%' . $search . '%')
-                                ->orWhere('purchase_with_tax', 'like', '%' . $search . '%');
-                        })
-                        ->orWhereHas('category', function ($q) use ($search) {
-                            $q->where('categoryName', 'like', '%' . $search . '%');
-                        })
-                        ->orWhereHas('unit', function ($q) use ($search) {
-                            $q->where('unitName', 'like', '%' . $search . '%');
-                        })
-                        ->orWhereHas('stocks', function ($q) use ($search) {
-                            $q->where('productStock', 'like', '%' . $search . '%');
-                        });
+        $products = Product::with(['unit:id,unitName', 'category:id,categoryName', 'stocks'])
+    ->where('business_id', auth()->user()->business_id)
+    ->when($search, function ($q) use ($search) {
+        $searchTerm = '%' . $search . '%';
+        
+        $q->where(function ($q) use ($searchTerm) {
+            $q->where('productName', 'like', $searchTerm)
+                ->orWhere('productCode', 'like', $searchTerm)
+                ->orWhereHas('category', fn($q) => $q->where('categoryName', 'like', $searchTerm))
+                ->orWhereHas('unit', fn($q) => $q->where('unitName', 'like', $searchTerm))
+                ->orWhereHas('stocks', function ($q) use ($searchTerm) {
+                    $q->where('sales_price', 'like', $searchTerm)
+                        ->orWhere('productStock', 'like', $searchTerm)
+                        ->orWhere('dealer_price', 'like', $searchTerm)
+                        ->orWhere('purchase_with_tax', 'like', $searchTerm);
                 });
-            })
-            ->latest()
-            ->paginate($request->per_page ?? 10);
+        });
+    })
+    ->latest()
+    ->paginate($request->per_page ?? 10);
 
         if ($request->ajax()) {
             return response()->json([

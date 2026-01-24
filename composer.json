@@ -12,18 +12,19 @@
         "hardevine/shoppingcart": "^3.4",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
+        "laravel/scout": "^10.23",
         "laravel/tinker": "^2.8",
+        "league/omnipay": "^3.2",
         "maatwebsite/excel": "^3.1",
         "mollie/mollie-api-php": "^2.65",
         "nwidart/laravel-modules": "10.0.6",
+        "omnipay/paypal": "^3.0",
         "paytm/paytmchecksum": "^1.1",
         "razorpay/razorpay": "^2.9",
         "safiull/laravel-installer": "^3.3",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.3",
-        "stripe/stripe-php": "^13.10",
-        "league/omnipay": "^3.2",
-        "omnipay/paypal": "^3.0"
+        "stripe/stripe-php": "^13.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

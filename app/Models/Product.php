@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
     use HasFactory;
+    use Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -40,6 +42,28 @@ class Product extends Model
         'product_type',
         'tax_amount',
     ];
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'business_id' => $this->business_id,
+            'productName' => $this->productName,
+            'productCode' => $this->productCode,
+            'categoryName' => $this->category->categoryName ?? '',
+            'unitName' => $this->unit->unitName ?? '',
+            // Add stock-related fields if needed
+            'sales_price' => $this->stocks->pluck('sales_price')->implode(' '),
+            'productStock' => $this->stocks->pluck('productStock')->implode(' '),
+            'dealer_price' => $this->stocks->pluck('dealer_price')->implode(' '),
+            'purchase_with_tax' => $this->stocks->pluck('purchase_with_tax')->implode(' '),
+        ];
+    }
+
+    public function searchableAs()
+    {
+        return 'products_index';
+    }
 
     public function stocks(): HasMany
     {

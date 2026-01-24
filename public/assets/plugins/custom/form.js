@@ -308,22 +308,89 @@ $("#mail-driver-label").text(initialLabelText);
 /** system setting end */
 
 /**  filter all from start */
-$(".filter-form").on("input", function (e) {
+let filterTimer;
+$("#product-search--js").on("click", function (e) {
     e.preventDefault();
 
-    var table = $(this).attr("table");
-    $.ajax({
-        type: "POST",
-        url: $(this).attr("action"),
-        data: new FormData(this),
-        dataType: "json",
-        contentType: false,
-        cache: false,
-        processData: false,
-        success: function (res) {
-            $(table).html(res.data);
-        },
-    });
+    var table = $('.filter-form').attr("table");
+    var $form = $('.filter-form');
+    var searchInput = $form.find('input[name="search"]').val();
+    
+    // Clear previous timer
+    clearTimeout(filterTimer);
+    
+    // Only search if 2+ characters or empty (for reset)
+    if (searchInput.length > 0 && searchInput.length < 2) {
+        return;
+    }
+    
+    // Show loading indicator
+    if ($(table).length) {
+        $(table).css('opacity', '0.5');
+    }
+        $.ajax({
+            type: "POST",
+            url: $form.attr("action"),
+            data: new FormData($form[0]),
+            dataType: "json",
+            contentType: false,
+            cache: true,
+            processData: false,
+            success: function (res) {
+                $(table).html(res.data);
+                $(table).css('opacity', '1');
+            },
+            error: function(xhr) {
+                console.error('Filter error:', xhr.responseText);
+                $(table).css('opacity', '1');
+            }
+        });
+ 
+});
+$("#product-search-input--js").on("keyup", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    if(e.originalEvent.key == 'enter') {
+
+    var table = $('.filter-form').attr("table");
+    var $form = $('.filter-form');
+    var searchInput = $form.find('input[name="search"]').val();
+    
+    // Clear previous timer
+    clearTimeout(filterTimer);
+    
+    // Only search if 2+ characters or empty (for reset)
+    if (searchInput.length > 0 && searchInput.length < 2) {
+        return;
+    }
+    
+    // Show loading indicator
+    if ($(table).length) {
+        $(table).css('opacity', '0.5');
+    }
+        $.ajax({
+            type: "POST",
+            url: $form.attr("action"),
+            data: new FormData($form[0]),
+            dataType: "json",
+            contentType: false,
+            cache: true,
+            processData: false,
+            success: function (res) {
+                $(table).html(res.data);
+                $(table).css('opacity', '1');
+            },
+            error: function(xhr) {
+                console.error('Filter error:', xhr.responseText);
+                $(table).css('opacity', '1');
+            }
+        });
+
+
+    }
+ 
 });
 
 /**  filter all from  end */
