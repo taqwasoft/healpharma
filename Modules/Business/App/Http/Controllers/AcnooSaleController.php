@@ -86,6 +86,71 @@ class AcnooSaleController extends Controller
 
     public function productFilter(Request $request)
     {
+        $businessId = auth()->user()->business_id;
+        
+        // Use select to limit columns
+        $query = Product::select([
+            'id', 'productName', 'productCode', 'sales_price', 
+            'dealer_price', 'wholesale_price', 'category_id', 
+            'unit_id', 'images', 'type_id'
+        ])
+        ->where('business_id', $businessId);
+        
+        // Add stock filter using EXISTS for better performance
+        $query->whereHas('stocks', function ($q) {
+            $q->where('productStock', '>', 0);
+        });
+        
+        // Search optimization
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('productName', 'LIKE', $search . '%')  // Changed to prefix search
+                ->orWhere('productCode', '=', $search);  // Exact match for codes
+            });
+        }
+        
+        // Category filter
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+        
+        // Manufacturer filter
+        if ($request->filled('manufacturer_id')) {
+            $query->where('manufacturer_id', $request->manufacturer_id);
+        }
+        
+        // Eager load only necessary relationships
+        $query->with([
+            'medicine_type:id,name',
+            'stocks' => function($q) {
+                $q->select('id', 'product_id', 'productStock', 'batch_no', 'expire_date', 
+                        'sales_price', 'dealer_price', 'wholesale_price', 
+                        'purchase_without_tax', 'purchase_with_tax')
+                ->where('productStock', '>', 0);
+            }
+        ]);
+        
+        // Limit results for barcode scan
+        $limit = $request->filled('search') ? 50 : 20;
+        $products = $query->latest('id')->limit($limit)->get();
+        
+        $total_products = $products->count();
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'total_products' => $total_products,
+                'total_products_count' => $total_products,
+                'product_id' => $total_products == 1 ? $products->first()->id : null,
+                'data' => view('business::sales.product-list', compact('products'))->render(),
+            ]);
+        }
+        
+        return redirect(url()->previous());
+    }
+
+    public function productFilterOld(Request $request)
+    {
         $total_products_count = Product::where('business_id', auth()->user()->business_id)->count();
         $products = Product::where('business_id', auth()->user()->business_id)
             ->whereHas('stocks', function ($query) {

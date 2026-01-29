@@ -165,7 +165,7 @@
                                 <tr>
                                     <th class="sales-purchase-th">{{ __('Image') }}</th>
                                     <th class="sales-purchase-th">{{ __('Items') }}</th>
-                                    <th class="sales-purchase-th">{{ __('Batch') }}</th>
+                                    <th class="sales-purchase-th">{{ __('Cost') }}</th>
                                     <th class="sales-purchase-th">{{ __('Unit Price') }}</th>
                                     <th class="sales-purchase-th">{{ __('Qty') }}</th>
                                     <th class="sales-purchase-th">{{ __('Sub Total') }}</th>

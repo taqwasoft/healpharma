@@ -154,7 +154,18 @@ $(document).on("change", ".cart-qty", function () {
     let $row = $(this).closest("tr");
     let rowId = $row.data("row_id");
     let updateRoute = $row.data("update_route");
-    let newQty = parseFloat($(this).val());
+    let newQty = parseInt($(this).val());
+
+    // Ensure quantity is a valid integer and at least 1
+    if (isNaN(newQty) || newQty < 1) {
+        toastr.error("Quantity must be at least 1.");
+        $(this).val(1);
+        newQty = 1;
+    }
+
+    // Round to whole number
+    newQty = Math.floor(newQty);
+    $(this).val(newQty);
 
     // Retrieve the cart price
     let currentPrice = parseFloat($row.find(".cart-price").val());
@@ -163,10 +174,7 @@ $(document).on("change", ".cart-qty", function () {
         return;
     }
 
-    // Ensure quantity does not go below 0
-    if (newQty >= 0) {
-        updateCart(rowId, newQty, updateRoute, currentPrice);
-    }
+    updateCart(rowId, newQty, updateRoute, currentPrice);
 });
 
 // Remove item from the cart
@@ -461,7 +469,7 @@ $(".product-filter").on(
         }
 
         handleUserInput();
-    }, 400)
+    }, 200)
 );
 
 // Function to handle scanner input
@@ -480,10 +488,16 @@ function handleScannerInput(inputElement) {
         cache: false,
         processData: false,
         success: function (res) {
+            // Always refresh the list so scanner input mirrors manual search
+            if (res.data) {
+                $("#products-list").html(res.data);
+            }
+
+            // Auto add when a single product matches the scanned code
             if (res.total_products && res.product_id) {
                 autoAddItemToCart(res.product_id);
             }
-            // $("#products-list").html(res.data); // Update the table with new data
+
             // change price according customer-type
             customerWisePrice();
         },
@@ -508,28 +522,60 @@ function resetScannerLock() {
 // Fetch products function
 function fetchProducts() {
     const form = $(".product-filter-form")[0];
-    $.ajax({
+    const formData = new FormData(form);
+    
+    // Cancel previous AJAX request if still pending
+    if (window.productSearchXHR) {
+        window.productSearchXHR.abort();
+    }
+    
+    window.productSearchXHR = $.ajax({
         type: "POST",
         url: $(form).attr("action"),
-        data: new FormData(form),
+        data: formData,
         dataType: "json",
         contentType: false,
-        cache: false,
+        cache: true,  // Enable caching
         processData: false,
         success: function (res) {
-            $("#products-list").html(res.data); // Update the table with new data
-            if (
-                res.total_products &&
-                res.product_id &&
-                res.total_products_count > 1
-            ) {
+            $("#products-list").html(res.data);
+            // if (res.total_products && res.product_id && res.total_products_count > 1) {
+            //     autoAddItemToCart(res.product_id);
+            // }
+            if (res.total_products === 1 && res.product_id) {
                 autoAddItemToCart(res.product_id);
             }
-            // change price according customer-type
             customerWisePrice();
         },
+        complete: function() {
+            window.productSearchXHR = null;
+        }
     });
 }
+// function fetchProducts() {
+//     const form = $(".product-filter-form")[0];
+//     $.ajax({
+//         type: "POST",
+//         url: $(form).attr("action"),
+//         data: new FormData(form),
+//         dataType: "json",
+//         contentType: false,
+//         cache: false,
+//         processData: false,
+//         success: function (res) {
+//             $("#products-list").html(res.data); // Update the table with new data
+//             if (
+//                 res.total_products &&
+//                 res.product_id &&
+//                 res.total_products_count > 1
+//             ) {
+//                 autoAddItemToCart(res.product_id);
+//             }
+//             // change price according customer-type
+//             customerWisePrice();
+//         },
+//     });
+// }
 
 // Customer Wise Product Price Change
 function customerWisePrice() {

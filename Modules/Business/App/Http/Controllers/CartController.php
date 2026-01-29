@@ -83,6 +83,7 @@ class CartController extends Controller
                 'options' => [
                     'type' => $request->type,
                     'stock_id' => $request->stock_id,
+                    'cost' => $request->purchase_inclusive_price ?? $request->purchase_exclusive_price ?? 0,
                     'purchase_without_tax' => $request->purchase_exclusive_price,
                     'purchase_with_tax' => $request->purchase_inclusive_price,
                     'invoice_qty' => $request->invoice_qty ?? 0,
@@ -134,6 +135,7 @@ class CartController extends Controller
                             'expire_date' => $request->expire_date ?? $cart->options->expire_date,
                             'product_unit_name' => $cart->options->product_unit_name,
                             'product_image' => $cart->options->product_image,
+                            'cost' => $request->purchase_inclusive_price ?? $request->purchase_exclusive_price ?? $cart->options->cost ?? 0,
                             'purchase_without_tax' => $request->purchase_exclusive_price ?? $cart->options->purchase_without_tax ?? 0,
                             'purchase_with_tax' => $request->purchase_inclusive_price ?? $cart->options->purchase_with_tax ?? 0,
                             'invoice_qty' => $request->invoice_qty ?? $cart->options->invoice_qty ?? 0,

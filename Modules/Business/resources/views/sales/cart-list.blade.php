@@ -3,7 +3,7 @@
         <tr data-row_id="{{ $cart->rowId }}" data-batch_no="{{ $cart->options->batch_no ?? '' }}" data-stock_id="{{ $cart->options->stock_id ?? '' }}" data-update_route="{{ route('business.carts.update', $cart->rowId) }}" data-destroy_route="{{ route('business.carts.destroy', $cart->rowId) }}">
         <td class='text-center sales-purchase-td'><img src="{{ asset($cart->options->product_image ?? 'assets/images/products/box.svg') }}" alt=""></td>
             <td class='text-start sales-purchase-td'>{{ $cart->name }}</td>
-            <td class='text-center sales-purchase-td'>{{ $cart->options->batch_no ?? '' }}</td>
+            <td class='text-center sales-purchase-td'>{{ currency_format($cart->options->cost ?? 0, 'icon', 2, business_currency()) }}</td>
             <td class="sales-purchase-td">
                 <input class="text-center sales-input cart-price" type="number" step="any" min="0" value="{{ $cart->price }}" placeholder="0">
             </td>
