@@ -7,6 +7,7 @@
             <td class="sales-purchase-td">
                 <input class="text-center sales-input cart-price" type="number" step="any" min="0" value="{{ $cart->price }}" placeholder="0">
             </td>
+            
             <td class="large-td sales-purchase-td">
                 <div class="d-flex  align-items-center justify-content-center">
                     <button class="incre-decre minus-btn"><i class="fas fa-minus icon"></i></button>
@@ -14,6 +15,9 @@
                     <button class="incre-decre plus-btn"><i class="fas fa-plus icon"></i></button>
                 </div>
             </td>
+            {{-- <td class="sales-purchase-td">
+                <input class="text-center sales-input cart-price" type="number" step="any" min="0" value="{{ 0 }}" placeholder="0">
+            </td> --}}
             <td class="cart-subtotal sales-purchase-td">{{ currency_format($cart->subtotal, 'icon', 2, business_currency()) }}</td>
             <td class="sales-purchase-td">
                 <button class='x-btn remove-btn'>

@@ -11,8 +11,8 @@
 
 @section('main_content')
     <div class="custome-container-fluid custom-min-height">
-        <div class="grid sales-main-container w-auto p-lr">
-            <div class="main-container w-auto">
+        <div class="sales-main-container" style="display: flex; width: 100%;">
+            <div class="main-container" style="width: 45%; min-width: 300px;">
                 <!-- Products Header -->
                 <div class="products-header">
                     <div class="container-fluid p-0 m-0">
@@ -83,7 +83,7 @@
                     </div>
                 </div>
             </div>
-            <div class="sales-container w-auto">
+            <div class="sales-container" style="width: 55%; min-width: 300px;">
                 <!-- Quick Action Section -->
                 <div class="quick-act-header">
                     <div class="d-flex flex-sm-row justify-content-between align-items-center">
@@ -167,7 +167,8 @@
                                     <th class="sales-purchase-th">{{ __('Items') }}</th>
                                     <th class="sales-purchase-th">{{ __('Cost') }}</th>
                                     <th class="sales-purchase-th">{{ __('Unit Price') }}</th>
-                                    <th class="sales-purchase-th">{{ __('Qty') }}</th>
+                                    {{-- <th class="sales-purchase-th">{{ __('Qty') }}</th>
+                                    <th class="sales-purchase-th">{{ __('Disc%') }}</th> --}}
                                     <th class="sales-purchase-th">{{ __('Sub Total') }}</th>
                                     <th class="sales-purchase-th">{{ __('Action') }}</th>
                                 </tr>

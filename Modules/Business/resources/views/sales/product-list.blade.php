@@ -5,7 +5,7 @@
         $purchaseWithTax = $firstStock->purchase_with_tax ?? 0;
         $salePrice = $firstStock->sales_price ?? 0;
     @endphp
-    <div id="single-product" class="single-product {{ $product->id }} d-flex align-items-center justify-content-between gap-3 p-2"
+    <div id="single-product" class="single-product {{ $product->id }} d-flex align-items-center justify-content-between gap-3" style="padding-top:0;padding-bottom:0;padding-right:4px;"
          data-product_id="{{ $product->id }}"
          data-default_price="{{ $salePrice }}"
          data-product_unit_name="{{ $product->unit->unitName ?? '' }}"
